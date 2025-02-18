@@ -26,7 +26,13 @@
             <div class="col-md-8">
                 <h1 class="display-4 text-center">Welcome to our website!</h1>
                 <hr>
-                <p class="text-center text-muted">You are currently logged out. Try utilizing the Google login button at the top right</p>
+                <p class="text-center text-muted">
+                    {% if role == None %}
+                        You are currently logged out. Try utilizing the Google login button at the top right.
+                    {% else %}
+                        You are logged in as a {{ role }}.
+                    {% endif %}
+                </p>
             </div>
         </div>
     </div>
