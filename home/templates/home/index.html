@@ -1,7 +1,7 @@
 {% load static %}
 {% load bootstrap5 %}
 {% bootstrap_css %}
-
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <span class="navbar-brand">Video Game Rentals</span>
@@ -13,7 +13,33 @@
             </ul>
             <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active me-3" href="">Login</a>
+                    {% if request.session.user_data %}
+      <div>
+        <p>Hi {{ request.session.user_data.given_name }} 🙂</p>
+        <p>Your email is {{ request.session.user_data.email }}</p>
+        <img src="{{ request.session.user_data.picture }}" alt="User picture" />
+        <p>Click here to <a href="/sign-out">Sign out</a></p>
+      </div>
+      {% else %}
+      <div>
+
+        <div id="g_id_onload"
+        data-client_id="563076289389-1pe9mqe4bp4if8n4f1qln2n0plijlfv8.apps.googleusercontent.com"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-login_uri="http://localhost:8000/auth-receiver"
+        data-auto_prompt="false">
+   </div>
+   
+   <div class="g_id_signin"
+        data-type="icon"
+        data-shape="square"
+        data-theme="outline"
+        data-text="signin_with"
+        data-size="large">
+   </div>
+      </div>
+      {% endif %}
                 </li>
             </ul>
         </div>
