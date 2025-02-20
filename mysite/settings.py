@@ -15,8 +15,25 @@ from pathlib import Path
 from django.contrib import admin
 from django.urls import path, include
 
+from dotenv import load_dotenv
+
+# Get the project base directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+env_path = os.path.join(BASE_DIR, "core", ".env")
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+
+if not GOOGLE_OAUTH_CLIENT_ID:
+    raise ValueError("GOOGLE_OAUTH_CLIENT_ID is missing. Have you put it in a file at core/.env?")
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -85,13 +102,13 @@ MIDDLEWARE = [
 ]
 
 #Google Login Stuff
-SITE_ID = 1
+SITE_ID = 2 #2 instead of 1, since we deleted example.com in /admin
 LOGIN_REDIRECT_URL = '/'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': ['email', 'profile'],
-        'AUTH_PARAMS': {'access_type': 'online'},
+        'AUTH_PARAMS': {'access_type': 'online'}
     }
 }
 

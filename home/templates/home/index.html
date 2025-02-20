@@ -1,6 +1,7 @@
 {% load static %}
 {% load bootstrap5 %}
 {% bootstrap_css %}
+{% load socialaccount %}
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
@@ -12,9 +13,15 @@
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active me-3" href="">Login</a>
-                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link active me-3" href="{% url 'account_logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link active me-3" href="{% provider_login_url 'google' %}">Login with Google</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
