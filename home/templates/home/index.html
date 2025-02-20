@@ -1,0 +1,45 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <span class="navbar-brand">Video Game Rentals</span>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="{% url 'home:index' %}">Home</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active me-3" href="">Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<body class="d-flex flex-column min-vh-100">
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="display-4 text-center">Welcome to our website!</h1>
+                <hr>
+                <p class="text-center text-muted">
+                    {% if role == None %}
+                        You are currently logged out. Try utilizing the Google login button at the top right.
+                    {% else %}
+                        You are logged in as a {{ role }}.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+<footer class="mt-auto">
+    <div class="text-center mt-5 py-3 bg-light">
+        <p>© 2025 Team A-18 - Video Game Rentals</p>
+    </div>
+</footer>

@@ -51,6 +51,8 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    'home',
+    'bootstrap5',
     "whitenoise.runserver_nostatic",
     'django.contrib.admin',
     'django.contrib.auth',
