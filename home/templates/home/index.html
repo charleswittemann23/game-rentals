@@ -53,10 +53,14 @@
                 <hr>
 
                 <div class="p-4 rounded shadow bg-white">
-                    {% if role == None %}
-                        <p class="fs-5 text-muted">You are currently logged out. Try utilizing the Google login button at the top right.</p>
+                    {% if role == "Guest" %}
+                        <p class="fs-5 text-muted">You are currently a Guest. Try utilizing the Google login button at the top right.</p>
+                    {% elif role == "Librarian" %}
+                        <p class="fs-5 text-primary">Welcome, Librarian! You have administrative privileges.</p>
+                    {% elif role == "Patron" %}
+                        <p class="fs-5 text-success">Welcome, <strong>{{ username }}</strong>! You are logged in as a Patron.</p>
                     {% else %}
-                        <p class="fs-5 text-success">You are logged in as a <strong>{{ role }}</strong>.</p>
+                        <p class="fs-5 text-warning">Your role is unassigned. Please contact support.</p>
                     {% endif %}
                 </div>
 
