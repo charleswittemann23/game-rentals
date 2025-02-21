@@ -48,7 +48,7 @@
     <main class="container text-center mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <h1 class="display-4 fw-bold">Welcome Non-Librarian!</h1>
+                <h1 class="display-7 fw-bold">You are logged in as: <strong>{{ username }}</strong></h1>
                 <p class="lead text-muted">Discover and rent your favorite video games.</p>
                 <hr>
 
@@ -58,7 +58,7 @@
                     {% elif role == "Librarian" %}
                         <p class="fs-5 text-primary">Welcome, Librarian! You have administrative privileges.</p>
                     {% elif role == "Patron" %}
-                        <p class="fs-5 text-success">Welcome, <strong>{{ username }}</strong>! You are logged in as a Patron.</p>
+                        <p class="fs-5 text-success">Welcome, Patron!</p>
                     {% else %}
                         <p class="fs-5 text-warning">Your role is unassigned. Please contact support.</p>
                     {% endif %}
