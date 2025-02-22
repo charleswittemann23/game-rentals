@@ -1,4 +1,6 @@
-import os
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import UserProfile
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -6,28 +8,26 @@ from django.views.decorators.csrf import csrf_exempt
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
+@login_required
 def index(request):
-    return render(request, 'home/index.html')
-def auth_receiver(request):
-    """
-    Google calls this URL after the user has signed in with their Google account.
-    """
-    print('Inside')
-    token = request.POST['credential']
+    role = "Patron"
 
-    try:
-        user_data = id_token.verify_oauth2_token(
-            token, requests.Request(), os.environ['GOOGLE_OAUTH_CLIENT_ID']
-        )
-    except ValueError:
-        return HttpResponse(status=403)
+    # if request.user.is_superuser:  # Check if user is an admin
+    #     return render(request, "home/admin.html")
+    # else:
+    #     return render(request, "home/index.html")
 
-    # In a real app, I'd also save any new user here to the database.
-    # You could also authenticate the user here using the details from Google (https://docs.djangoproject.com/en/4.2/topics/auth/default/#how-to-log-a-user-in)
-    request.session['user_data'] = user_data
+    if request.user.is_authenticated:
+        try:
+            # Retrieve role from UserProfile
+            role = request.user.userprofile.role
+            username = request.user.username
+        except UserProfile.DoesNotExist:
+            role = "Guest"  # If UserProfile is missing
 
-    return redirect('sign_in')
+    return render(request, 'home/index.html', {'role': role, 'username': username})
 
-def sign_out(request):
-    del request.session['user_data']
-    return redirect('sign_in')
+@login_required
+def dashboard(request):
+    return render(request, "home/dashboard.html")
+
