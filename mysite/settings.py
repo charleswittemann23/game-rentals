@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from .env file
-env_path = os.path.join(BASE_DIR, "core", ".env")
+env_path = os.path.join(BASE_DIR, ".env")
 if os.path.exists(env_path):
     load_dotenv(env_path)
 
