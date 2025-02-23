@@ -14,7 +14,8 @@ def index(request):
 
     if request.user.is_authenticated:
         try:
-            role = request.user.userprofile.role  # Retrieve role from UserProfile
+            # Retrieve role from UserProfile
+            role = request.user.userprofile.role
         except UserProfile.DoesNotExist:
             role = "Guest"  # If UserProfile is missing
 
