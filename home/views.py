@@ -11,6 +11,7 @@ from google.auth.transport import requests
 @login_required
 def index(request):
     role = "Patron"
+    username = request.user.username
 
     # if request.user.is_superuser:  # Check if user is an admin
     #     return render(request, "home/admin.html")
@@ -21,7 +22,6 @@ def index(request):
         try:
             # Retrieve role from UserProfile
             role = request.user.userprofile.role
-            username = request.user.username
         except UserProfile.DoesNotExist:
             role = "Guest"  # If UserProfile is missing
 
