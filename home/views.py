@@ -24,3 +24,6 @@ def index(request):
 def dashboard(request):
     return render(request, "home/dashboard.html")
 
+def wishlist(request):
+    return render(request, "home/wishlist.html")
+
