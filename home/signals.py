@@ -5,9 +5,10 @@ from .models import UserProfile
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    if created:
+    if created and not instance.is_superuser:
         UserProfile.objects.create(user=instance, role="Patron")  # Default to Patron
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    instance.userprofile.save()
+    if not instance.is_superuser and hasattr(instance, 'userprofile'):
+        instance.userprofile.save()

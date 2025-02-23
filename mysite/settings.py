@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from .env file
-env_path = os.path.join(BASE_DIR, "core", ".env")
+env_path = os.path.join(BASE_DIR, ".env")
 if os.path.exists(env_path):
     load_dotenv(env_path)
 
@@ -33,7 +33,11 @@ GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 
 if not GOOGLE_OAUTH_CLIENT_ID:
-    raise ValueError("GOOGLE_OAUTH_CLIENT_ID is missing. Have you put it in a file at core/.env?")
+    raise ValueError("GOOGLE_OAUTH_CLIENT_ID is missing. Have you put it in a file called .env?")
+
+if not GOOGLE_OAUTH_CLIENT_SECRET:
+    raise ValueError("GOOGLE_OAUTH_CLIENT_SECRET is missing. Have you put it in a file called .env?")
+
 
 
 # Quick-start development settings - unsuitable for production
