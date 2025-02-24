@@ -14,7 +14,7 @@ from pathlib import Path
 
 from django.contrib import admin
 from django.urls import path, include
-
+import dj_database_url # helps to parse Heroku database url
 from dotenv import load_dotenv
 
 
@@ -107,7 +107,7 @@ MIDDLEWARE = [
 ]
 
 #Google Login Stuff
-SITE_ID = 2 #2 instead of 1, since we deleted example.com in /admin
+SITE_ID = 3 #2 instead of 1, since we deleted example.com in /admin
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_PROVIDERS = {
@@ -141,13 +141,17 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.getenv('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
     }
-}
+else:    
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
