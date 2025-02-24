@@ -5,6 +5,7 @@ certifi==2025.1.31
 cffi==1.17.1
 charset-normalizer==3.4.1
 cryptography==44.0.1
+dj-database-url==2.3.0
 Django==4.2.18
 django-allauth==65.4.1
 django-bootstrap-v5==1.0.11
@@ -23,6 +24,7 @@ packaging==24.2
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pycparser==2.22
+PyJWT==2.1.0
 pyparsing==3.2.1
 python-dotenv==1.0.1
 requests==2.32.3
@@ -35,4 +37,3 @@ typing_extensions==4.12.2
 uritemplate==3.0.1
 urllib3==2.3.0
 whitenoise==6.8.2
-PyJWT==2.1.0
