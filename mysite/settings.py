@@ -29,8 +29,8 @@ env_path = os.path.join(BASE_DIR, ".env")
 if os.path.exists(env_path):
     load_dotenv(env_path)
 
-GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+GOOGLE_OAUTH_CLIENT_ID= "207384192227-hhkq5oadpjbjv4ha2tunadc4sc0l1k0s.apps.googleusercontent.com"
+GOOGLE_OAUTH_CLIENT_SECRET= "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"
 
 if not GOOGLE_OAUTH_CLIENT_ID:
     raise ValueError("GOOGLE_OAUTH_CLIENT_ID is missing. Have you put it in a file called .env?")
