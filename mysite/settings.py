@@ -107,7 +107,7 @@ MIDDLEWARE = [
 ]
 
 #Google Login Stuff
-SITE_ID = 3 #2 instead of 1, since we deleted example.com in /admin
+SITE_ID = 4 #2 instead of 1, since we deleted example.com in /admin
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_PROVIDERS = {
