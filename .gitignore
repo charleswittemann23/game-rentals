@@ -2,7 +2,7 @@
 *.log
 *.pot
 *.pyc
-*.jpeg
+*.jpg
 __pycache__
 db.sqlite3
 media
