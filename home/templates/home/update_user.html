@@ -1,0 +1,16 @@
+{% block content%}
+
+<div class="col-md-6 offset col-md-3">
+    <h1>Update Profile Picture</h1>
+    <br/>
+    <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{profile_form.as_p}}
+
+        <br/><br/>
+        <button type="submit" class="btn btn-secondary">Update ProfilePicture</button>
+
+    </form>
+</div>
+
+{% endblock %}

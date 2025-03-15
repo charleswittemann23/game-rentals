@@ -1,12 +1,12 @@
 from django.urls import path
 
 from . import views
-from .views import dashboard
-from .views import wishlist
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = "home"
 urlpatterns = [
     path("", views.index, name="index"),
-    path('dashboard/', dashboard, name='dashboard'),
-    path("wishlist/", wishlist, name="wishlist"),
-]
+    path("wishlist/", views.wishlist, name="wishlist"),
+    path("update_user/", views.update_user,name='update_user')
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

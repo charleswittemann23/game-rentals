@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import UserProfile
+from .forms import ProfilePicForm
 
 @login_required
 def index(request):
@@ -16,15 +17,26 @@ def index(request):
         try:
             # Retrieve role from UserProfile
             role = request.user.userprofile.role
+            profileimage = request.user.userprofile.profile_pic
         except UserProfile.DoesNotExist:
             role = "Guest"  # If UserProfile is missing
+            profileimage="default"
 
-    return render(request, 'home/index.html', {'role': role, 'username': username})
+    return render(request, 'home/index.html', {'role': role, 'username': username, 'profileimage': profileimage })
 
-@login_required
-def dashboard(request):
-    return render(request, "home/dashboard.html")
 
 def wishlist(request):
     return render(request, "home/wishlist.html")
+def update_user(request):
+    if request.user.is_authenticated:
+        profile_user=UserProfile.objects.get(id=request.user.id)
+
+        profile_form= ProfilePicForm(request.POST or None, request.FILES or None, instance=profile_user)
+        if profile_form.is_valid():
+            profile_form.save()
+            return redirect('home:index')
+        return render(request, 'home/update_user.html' ,{'profile_form': profile_form})
+
+
+
 
