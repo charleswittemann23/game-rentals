@@ -59,7 +59,7 @@
             {% for game in games %}
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm">
-                        <img src="{{ game.image_url }}" class="card-img-top" alt="{{ game.title }}">
+                        <img src="{{ game.image_url }}" class="card-img-top" alt="{{ game.title }}" style="width: 100%; height: 250px; object-fit: cover;">
                         <div class="card-body">
                             <h5 class="card-title">{{ game.title }}</h5>
                             <p class="card-text">{{ game.description|truncatewords:15 }}</p>
