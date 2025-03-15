@@ -59,6 +59,7 @@ else:
 
 INSTALLED_APPS = [
     'home',
+    'catalog',
     'bootstrap5',
     "whitenoise.runserver_nostatic",
     'django.contrib.admin',
@@ -92,7 +93,7 @@ MIDDLEWARE = [
 ]
 
 #Google Login Stuff
-SITE_ID = 4 #2 instead of 1, since we deleted example.com in /admin
+SITE_ID = 3 #2 instead of 1, since we deleted example.com in /admin
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

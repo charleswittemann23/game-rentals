@@ -8,7 +8,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Game Rentals</title>
+    <title>Catalog - Video Game Rentals</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 
@@ -22,10 +23,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'home:index' %}">Home</a>
+                        <a class="nav-link" href="{% url 'home:index' %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'catalog' %}">Catalog</a>
+                        <a class="nav-link active" href="{% url 'catalog' %}">Catalog</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home:wishlist' %}">Wishlist</a>
@@ -51,30 +52,26 @@
     </nav>
 
     <main class="container text-center mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <h1 class="display-7 fw-bold">You are logged in as: <strong>{{ username }}</strong></h1>
-                <p class="lead text-muted">Discover and rent your favorite video games.</p>
-                <hr>
-
-                <div class="p-4 rounded shadow bg-white">
-                    {% if role == "Guest" %}
-                        <p class="fs-5 text-muted">You are currently a Guest. Try utilizing the Google login button at the top right.</p>
-                    {% elif role == "Librarian" %}
-                        <p class="fs-5 text-primary">Welcome, Librarian! You have administrative privileges.</p>
-                    {% elif role == "Patron" %}
-                        <p class="fs-5 text-success">Welcome, Patron!</p>
-                    {% else %}
-                        <p class="fs-5 text-warning">Your role is unassigned. Please contact support.</p>
-                    {% endif %}
-                </div>
-
-                <!-- {% if user.is_authenticated %}
-                    <div class="mt-4">
-                        <a href="{% url 'home:dashboard' %}" class="btn btn-success btn-lg">Go to Dashboard</a>
+        <h1 class="display-7 fw-bold">Game Catalog</h1>
+        <p class="lead text-muted">Browse our collection and rent your favorite games.</p>
+        <hr>
+        
+        <div class="row">
+            {% for game in games %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm">
+                        <img src="{{ game.image_url }}" class="card-img-top" alt="{{ game.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ game.title }}</h5>
+                            <p class="card-text">{{ game.description|truncatewords:15 }}</p>
+                            <p class="text-muted">Genre: {{ game.genre }}</p>
+                            <a href="{% url 'catalog-detail' game.id %}" class="btn btn-primary">View Details</a>
+                        </div>
                     </div>
-                {% endif %} -->
-            </div>
+                </div>
+            {% empty %}
+                <p class="text-muted">No games available at the moment.</p>
+            {% endfor %}
         </div>
     </main>
 

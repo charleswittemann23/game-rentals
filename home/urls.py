@@ -8,5 +8,5 @@ app_name = "home"
 urlpatterns = [
     path("", views.index, name="index"),
     path('dashboard/', dashboard, name='dashboard'),
-    path("wishlist/", wishlist, name="wishlist"),
+    path("wishlist/", wishlist, name="wishlist")
 ]
