@@ -1,3 +1,6 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
 {% block content%}
 
 <div class="col-md-6 offset col-md-3">
@@ -8,8 +11,10 @@
         {{profile_form.as_p}}
 
         <br/><br/>
-        <button type="submit" class="btn btn-secondary">Update ProfilePicture</button>
-
+        <button type="submit" class="btn btn-secondary">Update Profile Picture</button>
+        
+            <a class="nav-link active" href="{% url 'home:index' %}">Home</a>
+        
     </form>
 </div>
 
