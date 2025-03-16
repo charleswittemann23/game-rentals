@@ -25,12 +25,17 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="{% url 'home:index' %}">Home</a>
                     </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link active" href="{% url 'home:wishlist' %}">Wishlist</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'home:update_user' %}">Update Profile Picture</a>
+                        </li>
+                           
                         <li class="nav-item">
                             <a class="nav-link active btn btn-danger text-white px-3" href="{% url 'account_logout' %}">
                                 Logout
@@ -43,6 +48,9 @@
                             </a>
                         </li>
                     {% endif %}
+                    <li class="nav-item">
+                        
+                    </li>
                 </ul>
             </div>
         </div>
@@ -51,7 +59,11 @@
     <main class="container text-center mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <h1 class="display-7 fw-bold">You are logged in as: <strong>{{ username }}</strong></h1>
+                <h1 class="display-7 fw-bold">You are logged in as: <strong>{{ username }}</strong> 
+                    {% if profileimage %}
+                    <img src="{{profileimage.url}}" width="50", height="50">
+                    {%endif%}
+                </h1>
                 <p class="lead text-muted">Discover and rent your favorite video games.</p>
                 <hr>
 
@@ -66,18 +78,18 @@
                         <p class="fs-5 text-warning">Your role is unassigned. Please contact support.</p>
                     {% endif %}
                 </div>
+                
 
-                <!-- {% if user.is_authenticated %}
-                    <div class="mt-4">
-                        <a href="{% url 'home:dashboard' %}" class="btn btn-success btn-lg">Go to Dashboard</a>
-                    </div>
-                {% endif %} -->
+               
             </div>
         </div>
+        
     </main>
 
     <footer class="mt-auto py-3 bg-dark text-white text-center">
         <p>© 2025 Team A-18 - Video Game Rentals</p>
+        
+        
     </footer>
 
     <!-- Bootstrap JS -->
