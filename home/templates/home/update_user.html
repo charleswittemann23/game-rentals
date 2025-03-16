@@ -1,0 +1,21 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% block content%}
+
+<div class="col-md-6 offset col-md-3">
+    <h1>Update Profile Picture</h1>
+    <br/>
+    <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{profile_form.as_p}}
+
+        <br/><br/>
+        <button type="submit" class="btn btn-secondary">Update Profile Picture</button>
+        
+            <a class="nav-link active" href="{% url 'home:index' %}">Home</a>
+        
+    </form>
+</div>
+
+{% endblock %}
