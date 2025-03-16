@@ -3,6 +3,15 @@ from django.contrib.auth.decorators import login_required
 from .models import UserProfile
 from .forms import ProfilePicForm
 from django.urls import reverse
+from io import BytesIO
+
+from django.core.files.storage import default_storage
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+
+
+
 
 @login_required
 def index(request):
@@ -28,11 +37,13 @@ def index(request):
 
 def wishlist(request):
     return render(request, "home/wishlist.html")
+    
 def update_user(request):
     if request.user.is_authenticated:
         profile_user=UserProfile.objects.get(id=request.user.id)
 
         profile_form= ProfilePicForm(request.POST or None, request.FILES or None, instance=profile_user)
+
         if profile_form.is_valid():
             profile_form.save()
             return redirect(reverse('home:index'))

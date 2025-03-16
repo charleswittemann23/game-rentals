@@ -9,4 +9,4 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("wishlist/", views.wishlist, name="wishlist"),
     path("update_user/", views.update_user,name='update_user')
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
