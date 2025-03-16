@@ -24,6 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 # Load environment variables from .env file
 env_path = os.path.join(BASE_DIR, ".env")
 if os.path.exists(env_path):
@@ -37,6 +38,7 @@ if not GOOGLE_OAUTH_CLIENT_ID:
 
 if not GOOGLE_OAUTH_CLIENT_SECRET:
     raise ValueError("GOOGLE_OAUTH_CLIENT_SECRET is missing. Have you put it in a file called .env?")
+
 
 
 
