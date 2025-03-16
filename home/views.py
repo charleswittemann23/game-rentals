@@ -40,7 +40,14 @@ def wishlist(request):
     
 def update_user(request):
     if request.user.is_authenticated:
-        profile_user=UserProfile.objects.get(id=request.user.id)
+        profile_user, created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+        'role': 'default_role',
+        'profile_pic': 'images/default.jpg',
+        # Add other default fields here
+    }
+)
 
         profile_form= ProfilePicForm(request.POST or None, request.FILES or None, instance=profile_user)
 
