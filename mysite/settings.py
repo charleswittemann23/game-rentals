@@ -17,6 +17,7 @@ from django.urls import path, include
 import dj_database_url # helps to parse Heroku database url
 from dotenv import load_dotenv
 
+load_dotenv()
 
 # Get the project base directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -97,7 +98,7 @@ MIDDLEWARE = [
 ]
 
 #Google Login Stuff
-SITE_ID = 4 #2 instead of 1, since we deleted example.com in /admin
+SITE_ID = 3 #2 instead of 1, since we deleted example.com in /admin
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -180,10 +181,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
 MEDIA_URL = 'media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media ')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -194,9 +193,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY= os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_STORAGE_BUCKET_NAME= os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_DEFAULT_ACL = None
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_FILE_OVERWRITE = False

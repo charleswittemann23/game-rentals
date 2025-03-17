@@ -3,14 +3,6 @@ from django.contrib.auth.decorators import login_required
 from .models import UserProfile
 from .forms import ProfilePicForm
 from django.urls import reverse
-from io import BytesIO
-
-from django.core.files.storage import default_storage
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
-
-
 
 
 @login_required
@@ -37,7 +29,8 @@ def index(request):
 
 def wishlist(request):
     return render(request, "home/wishlist.html")
-    
+
+
 def update_user(request):
     if request.user.is_authenticated:
         profile_user, created = UserProfile.objects.get_or_create(
