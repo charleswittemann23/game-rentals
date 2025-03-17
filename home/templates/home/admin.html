@@ -3,70 +3,289 @@
 {% bootstrap_css %}
 {% load socialaccount %}
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - Video Game Rentals</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-<body class="bg-light">
+<body class="d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Admin Panel</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home:dashboard' %}">Dashboard</a>
-                    </li> -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home:index' %}">
+                <i class="fas fa-gamepad me-2"></i>Game Rentals
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link btn btn-danger text-white" href="{% url 'account_logout' %}">Logout</a>
+                        <a class="nav-link" href="{% url 'home:index' %}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home:wishlist' %}">
+                            <i class="fas fa-heart me-1"></i> Wishlist
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'home:admin' %}">
+                            <i class="fas fa-cog me-1"></i> Admin
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home:update_user' %}">
+                                <i class="fas fa-user-edit me-1"></i> Update Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-danger text-white px-3 ms-2" href="{% url 'account_logout' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-light text-dark px-3 ms-2" href="{% provider_login_url 'google' %}">
+                                <i class="fab fa-google me-1"></i> Login with Google
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
-        <h1 class="text-center">Welcome, Librarian!</h1>
-        <p class="text-center text-muted">Manage users, settings, and content.</p>
-
+    <main class="container mt-5 fade-in">
         <div class="row">
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Manage Users</h5>
-                        <p class="card-text">View, edit, or remove user accounts.</p>
-                        <a href="{% url 'admin:auth_user_changelist' %}" class="btn btn-primary">Go to Users</a>
+            <div class="col-md-3 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Admin Panel</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-chart-line me-2"></i>Dashboard
+                        </a>
+                        <a href="{% url 'admin:auth_user_changelist' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-users me-2"></i>User Management
+                        </a>
+                        <a href="{% url 'admin:index' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-gamepad me-2"></i>Game Inventory
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-exchange-alt me-2"></i>Rental Transactions
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-star me-2"></i>Reviews & Ratings
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-cog me-2"></i>System Settings
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Manage Content</h5>
-                        <p class="card-text">Modify articles, posts, and other content.</p>
-                        <a href="{% url 'admin:index' %}" class="btn btn-warning">Go to Admin</a>
+            
+            <div class="col-md-9">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fas fa-tachometer-alt text-primary me-3 fs-3"></i>
+                    <h1 class="display-7 fw-bold mb-0">Admin Dashboard</h1>
+                </div>
+                <p class="lead text-muted mb-4">Manage your video game rental platform</p>
+                <div class="d-flex justify-content-start mb-4">
+                    <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <div class="card shadow text-center h-100">
+                            <div class="card-body d-flex flex-column">
+                                <div class="text-primary mb-3">
+                                    <i class="fas fa-users fa-3x"></i>
+                                </div>
+                                <h5 class="card-title">Total Users</h5>
+                                <p class="card-text display-6">1,245</p>
+                                <div class="mt-auto text-success">
+                                    <i class="fas fa-arrow-up"></i> +12% this month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <div class="card shadow text-center h-100">
+                            <div class="card-body d-flex flex-column">
+                                <div class="text-danger mb-3">
+                                    <i class="fas fa-gamepad fa-3x"></i>
+                                </div>
+                                <h5 class="card-title">Games Rented</h5>
+                                <p class="card-text display-6">583</p>
+                                <div class="mt-auto text-success">
+                                    <i class="fas fa-arrow-up"></i> +8% this month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow text-center h-100">
+                            <div class="card-body d-flex flex-column">
+                                <div class="text-success mb-3">
+                                    <i class="fas fa-dollar-sign fa-3x"></i>
+                                </div>
+                                <h5 class="card-title">Revenue</h5>
+                                <p class="card-text display-6">$4,250</p>
+                                <div class="mt-auto text-success">
+                                    <i class="fas fa-arrow-up"></i> +15% this month
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Settings</h5>
-                        <p class="card-text">Update website configuration and preferences.</p>
-                        <a href="#" class="btn btn-secondary">View Settings</a>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Recent Transactions</h5>
+                            <button class="btn btn-sm btn-primary">
+                                <i class="fas fa-download me-1"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>User</th>
+                                        <th>Game</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#1234</td>
+                                        <td>John Smith</td>
+                                        <td>The Legend of Zelda</td>
+                                        <td>Nov 15, 2023</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#1233</td>
+                                        <td>Sarah Johnson</td>
+                                        <td>Elden Ring</td>
+                                        <td>Nov 14, 2023</td>
+                                        <td><span class="badge bg-warning">Pending</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#1232</td>
+                                        <td>Michael Brown</td>
+                                        <td>God of War</td>
+                                        <td>Nov 12, 2023</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#1231</td>
+                                        <td>Emily Davis</td>
+                                        <td>Final Fantasy VII</td>
+                                        <td>Nov 10, 2023</td>
+                                        <td><span class="badge bg-danger">Overdue</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#1230</td>
+                                        <td>David Wilson</td>
+                                        <td>Red Dead Redemption 2</td>
+                                        <td>Nov 8, 2023</td>
+                                        <td><span class="badge bg-secondary">Returned</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <nav aria-label="Transaction pagination">
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <footer class="mt-5 py-3 bg-dark text-white text-center">
-        <p>© 2025 Your Project - Admin Dashboard</p>
+    <footer class="mt-auto py-4 text-white text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="text-uppercase mb-3">Quick Links</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="#" class="text-white">About Us</a></li>
+                        <li><a href="#" class="text-white">Contact</a></li>
+                        <li><a href="#" class="text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="text-uppercase mb-3">Connect With Us</h6>
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-uppercase mb-3">Newsletter</h6>
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
+                        <button class="btn btn-outline-light" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="background-color: rgba(255, 255, 255, 0.2);">
+            <p class="small mb-0">© 2025 Team A-18 - Video Game Rentals. All rights reserved.</p>
+        </div>
     </footer>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -9,12 +9,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalog - Video Game Rentals</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'home:index' %}">Video Game Rentals</a>
+            <a class="navbar-brand" href="{% url 'home:index' %}">
+                <i class="fas fa-gamepad me-2"></i>Game Rentals
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -22,33 +32,44 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home:index' %}">Home</a>
+                        <a class="nav-link" href="{% url 'home:index' %}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'catalog' %}">Catalog</a>
+                        <a class="nav-link active" href="{% url 'catalog' %}">
+                            <i class="fas fa-book me-1"></i> Catalog
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home:wishlist' %}">Wishlist</a>
+                        <a class="nav-link" href="{% url 'home:wishlist' %}">
+                            <i class="fas fa-heart me-1"></i> Wishlist
+                        </a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         {% if user.userprofile.role == 'Librarian' %}
                             <li class="nav-item">
-                                <a class="nav-link btn btn-success text-white px-3" href="{% url 'add_game' %}">
-                                    Add Game
+                                <a class="nav-link btn btn-success text-white px-3 ms-2" href="{% url 'add_game' %}">
+                                    <i class="fas fa-plus-circle me-1"></i> Add Game
                                 </a>
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link active btn btn-danger text-white px-3" href="{% url 'account_logout' %}">
-                                Logout
+                            <a class="nav-link" href="{% url 'home:update_user' %}">
+                                <i class="fas fa-user-edit me-1"></i> Update Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-danger text-white px-3 ms-2" href="{% url 'account_logout' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
                             </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link active btn btn-primary text-white px-3" href="{% provider_login_url 'google' %}">
-                                Login with Google
+                            <a class="nav-link btn btn-light text-dark px-3 ms-2" href="{% provider_login_url 'google' %}">
+                                <i class="fab fa-google me-1"></i> Login with Google
                             </a>
                         </li>
                     {% endif %}
@@ -57,35 +78,132 @@
         </div>
     </nav>
 
-    <main class="container text-center mt-5">
-        <h1 class="display-7 fw-bold">Game Catalog</h1>
-        <p class="lead text-muted">Browse our collection and rent your favorite games.</p>
-        <hr>
-        
-        <div class="row">
-            {% for game in games %}
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm">
-                        {% if game.image %}
-                            <img src="{{ game.image.url}}" class="card-img-top" alt="{{ game.title }}" style="width: 100%; height: 250px; object-fit: cover;">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ game.title }}</h5>
-                            <p class="card-text">{{ game.description|truncatewords:15 }}</p>
-                            <p class="text-muted">Genre: {{ game.genre }}</p>
-                            <a href="" class="btn btn-primary">View Details</a>
-{#                          <a href="{% url 'catalog-detail' game.id %}" class="btn btn-primary">View Details</a>#}
+    <main class="container mt-5 fade-in">
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-10">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fas fa-book text-primary me-3 fs-3"></i>
+                    <h1 class="display-7 fw-bold mb-0">Game Catalog</h1>
+                </div>
+                <p class="lead text-muted mb-4">Browse our collection and rent your favorite games</p>
+                <div class="d-flex justify-content-start mb-4">
+                    <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
+                </div>
+                
+                <!-- Search and Filter Section -->
+                <div class="card shadow mb-4">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search games...">
+                                    <button class="btn btn-primary" type="button">
+                                        <i class="fas fa-search me-1"></i> Search
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select">
+                                    <option selected>Filter by genre</option>
+                                    <option value="Action">Action</option>
+                                    <option value="Adventure">Adventure</option>
+                                    <option value="RPG">RPG</option>
+                                    <option value="Sports">Sports</option>
+                                    <option value="Strategy">Strategy</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-            {% empty %}
-                <p class="text-muted">No games available at the moment.</p>
-            {% endfor %}
+                
+                <!-- Games Grid -->
+                <div class="row">
+                    {% for game in games %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card shadow h-100">
+                                {% if game.image %}
+                                    <img src="{{ game.image.url}}" class="card-img-top" alt="{{ game.title }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <img src="https://placehold.co/400x200/6c5ce7/ffffff?text=No+Image" class="card-img-top" alt="No Image">
+                                {% endif %}
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">{{ game.title }}</h5>
+                                    <p class="card-text text-muted mb-2 small">
+                                        <i class="fas fa-tag me-1"></i> {{ game.genre }}
+                                    </p>
+                                    <p class="card-text flex-grow-1">{{ game.description|truncatewords:15 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <span class="badge bg-success">Available</span>
+                                        <a href="" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-info-circle me-1"></i> View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center p-5">
+                            <div class="mb-4">
+                                <i class="fas fa-gamepad text-muted fa-5x"></i>
+                            </div>
+                            <h5 class="mb-3">No games available at the moment</h5>
+                            <p class="text-muted mb-4">Check back later for our updated catalog</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if games %}
+                <div class="d-flex justify-content-center mt-4">
+                    <nav aria-label="Game catalog pagination">
+                        <ul class="pagination">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </main>
 
-    <footer class="mt-auto py-3 bg-dark text-white text-center">
-        <p>© 2025 Team A-18 - Video Game Rentals</p>
+    <footer class="mt-auto py-4 text-white text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="text-uppercase mb-3">Quick Links</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="#" class="text-white">About Us</a></li>
+                        <li><a href="#" class="text-white">Contact</a></li>
+                        <li><a href="#" class="text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="text-uppercase mb-3">Connect With Us</h6>
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-uppercase mb-3">Newsletter</h6>
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
+                        <button class="btn btn-outline-light" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="background-color: rgba(255, 255, 255, 0.2);">
+            <p class="small mb-0">© 2025 Team A-18 - Video Game Rentals. All rights reserved.</p>
+        </div>
     </footer>
 
     <!-- Bootstrap JS -->

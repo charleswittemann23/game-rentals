@@ -9,12 +9,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Game Rentals</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'home:index' %}">Video Game Rentals</a>
+            <a class="navbar-brand" href="{% url 'home:index' %}">
+                <i class="fas fa-gamepad me-2"></i>Game Rentals
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -22,75 +32,199 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'home:index' %}">Home</a>
+                        <a class="nav-link active" href="{% url 'home:index' %}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'catalog' %}">Catalog</a>
+                        <a class="nav-link" href="{% url 'catalog' %}">
+                            <i class="fas fa-book me-1"></i> Catalog
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home:wishlist' %}">Wishlist</a>
+                        <a class="nav-link" href="{% url 'home:wishlist' %}">
+                            <i class="fas fa-heart me-1"></i> Wishlist
+                        </a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link active" href="{% url 'home:update_user' %}">Update Profile Picture</a>
+                            <a class="nav-link" href="{% url 'home:update_user' %}">
+                                <i class="fas fa-user-edit me-1"></i> Update Profile
+                            </a>
                         </li>
-
                         <li class="nav-item">
-                            <a class="nav-link active btn btn-danger text-white px-3" href="{% url 'account_logout' %}">
-                                Logout
+                            <a class="nav-link btn btn-danger text-white px-3 ms-2" href="{% url 'account_logout' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
                             </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link active btn btn-primary text-white px-3" href="{% provider_login_url 'google' %}">
-                                Login with Google
+                            <a class="nav-link btn btn-light text-dark px-3 ms-2" href="{% provider_login_url 'google' %}">
+                                <i class="fab fa-google me-1"></i> Login with Google
                             </a>
                         </li>
                     {% endif %}
-                    <li class="nav-item">
-
-                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <main class="container text-center mt-5">
+    <main class="container mt-5 fade-in">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <h1 class="display-7 fw-bold">You are logged in as: <strong>{{ username }}</strong>
-                    {% if profileimage %}
-                        <img src="{{profileimage.url}}" width="50", height="50" alt={{username}}>
-                    {% endif %}
-                </h1>
-                <p class="lead text-muted">Discover and rent your favorite video games.</p>
-                <hr>
-
-                <div class="p-4 rounded shadow bg-white">
-                    {% if role == "Guest" %}
-                        <p class="fs-5 text-muted">You are currently a Guest. Try utilizing the Google login button at the top right.</p>
-                    {% elif role == "Librarian" %}
-                        <p class="fs-5 text-primary">Welcome, Librarian! You have administrative privileges.</p>
-                    {% elif role == "Patron" %}
-                        <p class="fs-5 text-success">Welcome, Patron!</p>
-                    {% else %}
-                        <p class="fs-5 text-warning">Your role is unassigned. Please contact support.</p>
-                    {% endif %}
+                <div class="text-center mb-5">
+                    <h1 class="display-7 fw-bold">Welcome to Game Rentals</h1>
+                    <p class="lead text-muted">Your ultimate destination for video game rentals</p>
+                    <div class="d-flex justify-content-center">
+                        <div class="border-bottom border-3 w-25 mt-2" style="border-color: var(--primary-color) !important;"></div>
+                    </div>
                 </div>
 
+                <div class="card shadow mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary bg-gradient rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Account Status</h5>
+                                <p class="text-muted mb-0">Currently logged in as: <strong>{{ username }}</strong>
+                                {% if profileimage %}
+                                    <img src="{{profileimage.url}}" width="30" height="30" class="rounded-circle ms-2" alt={{username}}>
+                                {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <hr>
 
+                        {% if role == "Guest" %}
+                            <div class="alert alert-info d-flex align-items-center" role="alert">
+                                <i class="fas fa-info-circle me-2 fs-4"></i>
+                                <div>
+                                    You are currently browsing as a <strong>Guest</strong>. Try utilizing the Google login button at the top right for full access.
+                                </div>
+                            </div>
+                        {% elif role == "Librarian" %}
+                            <div class="alert alert-primary d-flex align-items-center" role="alert">
+                                <i class="fas fa-crown me-2 fs-4"></i>
+                                <div>
+                                    Welcome, <strong>Librarian</strong>! You have administrative privileges.
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="/admin/" class="btn btn-primary">
+                                    <i class="fas fa-cogs me-1"></i> Access Admin Panel
+                                </a>
+                            </div>
+                        {% elif role == "Patron" %}
+                            <div class="alert alert-success d-flex align-items-center" role="alert">
+                                <i class="fas fa-check-circle me-2 fs-4"></i>
+                                <div>
+                                    Welcome, <strong>Patron</strong>! You have full access to rentals.
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2 fs-4"></i>
+                                <div>
+                                    Your role is <strong>unassigned</strong>. Please contact support.
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
 
+                <!-- Featured Games Section -->
+                <div class="mt-5">
+                    <h2 class="mb-4"><i class="fas fa-fire me-2"></i>Featured Games</h2>
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light"
+                                    data-mdb-ripple-color="light">
+                                    <img src="https://placehold.co/300x200/6c5ce7/ffffff?text=Zelda" class="card-img-top" alt="Game Cover">
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Zelda: BOTW</h5>
+                                    <p class="card-text small text-muted">Nintendo Switch</p>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="badge bg-success">Available</span>
+                                        <a href="#" class="btn btn-sm btn-primary">Add to Cart</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light"
+                                    data-mdb-ripple-color="light">
+                                    <img src="https://placehold.co/300x200/fd79a8/ffffff?text=Elden+Ring" class="card-img-top" alt="Game Cover">
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Elden Ring</h5>
+                                    <p class="card-text small text-muted">PlayStation 5</p>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="badge bg-success">Available</span>
+                                        <a href="#" class="btn btn-sm btn-primary">Add to Cart</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light"
+                                    data-mdb-ripple-color="light">
+                                    <img src="https://placehold.co/300x200/00b894/ffffff?text=God+of+War" class="card-img-top" alt="Game Cover">
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">God of War</h5>
+                                    <p class="card-text small text-muted">PlayStation 5</p>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="badge bg-secondary">Rented</span>
+                                        <a href="#" class="btn btn-sm btn-secondary disabled">Unavailable</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
     </main>
 
-    <footer class="mt-auto py-3 bg-dark text-white text-center">
-        <p>© 2025 Team A-18 - Video Game Rentals</p>
-
-
+    <footer class="mt-auto py-4 text-white text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="text-uppercase mb-3">Quick Links</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="#" class="text-white">About Us</a></li>
+                        <li><a href="#" class="text-white">Contact</a></li>
+                        <li><a href="#" class="text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="text-uppercase mb-3">Connect With Us</h6>
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-uppercase mb-3">Newsletter</h6>
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
+                        <button class="btn btn-outline-light" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="background-color: rgba(255, 255, 255, 0.2);">
+            <p class="small mb-0">© 2025 Team A-18 - Video Game Rentals. All rights reserved.</p>
+        </div>
     </footer>
 
     <!-- Bootstrap JS -->
