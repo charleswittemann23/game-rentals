@@ -98,8 +98,8 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware'
 ]
 
-#Google Login Stuff
-SITE_ID = 3 #2 instead of 1, since we deleted example.com in /admin
+# Google Login Stuff
+SITE_ID = 4
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
