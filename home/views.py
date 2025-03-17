@@ -47,7 +47,7 @@ def update_user(request):
         if profile_form.is_valid():
             profile_form.save()
             return redirect(reverse('home:index'))
-        return render(request, 'home/update_user.html' ,{'profile_form': profile_form})
+        return render(request, 'home/update_user.html', {'profile_form': profile_form})
 
 
 

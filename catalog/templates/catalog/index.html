@@ -33,6 +33,13 @@
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
+                        {% if user.userprofile.role == 'Librarian' %}
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-success text-white px-3" href="{% url 'add_game' %}">
+                                    Add Game
+                                </a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link active btn btn-danger text-white px-3" href="{% url 'account_logout' %}">
                                 Logout
@@ -59,13 +66,15 @@
             {% for game in games %}
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm">
-                        <img src="{{ game.image_url }}" class="card-img-top" alt="{{ game.title }}" style="width: 100%; height: 250px; object-fit: cover;">
+                        {% if game.image %}
+                            <img src="{{ game.image.url}}" class="card-img-top" alt="{{ game.title }}" style="width: 100%; height: 250px; object-fit: cover;">
+                        {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">{{ game.title }}</h5>
                             <p class="card-text">{{ game.description|truncatewords:15 }}</p>
                             <p class="text-muted">Genre: {{ game.genre }}</p>
                             <a href="" class="btn btn-primary">View Details</a>
-{#                            <a href="{% url 'catalog-detail' game.id %}" class="btn btn-primary">View Details</a>#}
+{#                          <a href="{% url 'catalog-detail' game.id %}" class="btn btn-primary">View Details</a>#}
                         </div>
                     </div>
                 </div>
