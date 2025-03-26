@@ -83,6 +83,22 @@
                             </div>
                             {% endif %}
                         </div>
+
+                        {% if not user.userprofile.role == 'Patron' %}
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form.is_private }}
+                                <label class="form-check-label" for="{{ form.is_private.id_for_label }}">
+                                    Make this collection private
+                                </label>
+                            </div>
+                            {% if form.is_private.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.is_private.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                         
                         <div class="d-flex mt-4">
                             <button type="submit" class="btn btn-primary">

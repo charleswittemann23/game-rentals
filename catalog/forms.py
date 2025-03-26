@@ -29,4 +29,9 @@ class CollectionForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         if self.user and self.user.userprofile.role == 'Patron':
-            self.fields['is_private'] = forms.BooleanField(initial=False, disabled=True)
+            self.instance.is_private = False
+        else:
+            self.fields['is_private'] = forms.BooleanField(
+                required=False,
+                widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+            )

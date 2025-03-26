@@ -41,6 +41,8 @@ def create_collection(request):
             form.save_m2m()  # Save the many-to-many relationships
             messages.success(request, 'Collection created successfully!')
             return redirect('catalog')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = CollectionForm(user=request.user)
     
