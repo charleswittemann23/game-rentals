@@ -7,10 +7,13 @@ from django.contrib import messages
 
 def index(request):
     games = Game.objects.all()
-    public_collections = Collection.objects.filter(is_private=False)
+    if request.user.is_authenticated and request.user.userprofile.role == 'Librarian':
+        collections = Collection.objects.all()
+    else:
+        collections = Collection.objects.filter(is_private=False)
     return render(request, "catalog/index.html", {
         "games": games,
-        "public_collections": public_collections
+        "public_collections": collections
     })
 
 
