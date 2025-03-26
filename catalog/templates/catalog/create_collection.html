@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% load socialaccount %}
+
+{% block title %}Create Collection - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 fade-in">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center mb-4">
+                <i class="fas fa-folder-plus text-primary me-3 fs-3"></i>
+                <h1 class="display-7 fw-bold mb-0">Create New Collection</h1>
+            </div>
+            <p class="lead text-muted mb-4">Create a public collection of your favorite games</p>
+            <div class="d-flex justify-content-start mb-4">
+                <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-body p-4">
+                    <form method="POST" class="mb-3">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">
+                                <i class="fas fa-folder me-1"></i> Collection Name
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.name.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                <i class="fas fa-info-circle me-1"></i> Description
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-gamepad me-1"></i> Select Games
+                            </label>
+                            <div class="border rounded p-3">
+                                <div class="row">
+                                    {% for game in form.games %}
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            {{ game }}
+                                            <label class="form-check-label" for="{{ game.id_for_label }}">
+                                                {{ game.choice_label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% if form.games.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.games.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Create Collection
+                            </button>
+                            <a href="{% url 'catalog' %}" class="btn btn-outline-secondary ms-2">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Catalog
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
