@@ -7,6 +7,10 @@
     --font-primary: 'Poppins', sans-serif;
 }
 
+html {
+    background-color: var(--primary-color);
+}
+
 /* General Styling */
 body {
     font-family: var(--font-primary);
