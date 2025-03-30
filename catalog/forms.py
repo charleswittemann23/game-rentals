@@ -23,7 +23,7 @@ class CollectionForm(forms.ModelForm):
 
     class Meta:
         model = Collection
-        fields = ['name', 'description', 'games']
+        fields = ['name', 'description', 'games', 'is_private']
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
