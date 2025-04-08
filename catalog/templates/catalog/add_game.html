@@ -27,45 +27,93 @@
                         {% csrf_token %}
                         <div class="row mb-3">
                             <div class="col-md-12">
-                                <div class="form-floating mb-3">
-                                    {{ form.title }}
+                                <div class="mb-3">
                                     <label for="{{ form.title.id_for_label }}">Game Title</label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.title.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                     
+                                    
+                                          
+                                    
                                 </div>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    {{ form.genre }}
+                                <div class="mb-3">
                                     <label for="{{ form.genre.id_for_label }}">Genre</label>
+                                    {{ form.genre }}
+                                    {% if form.genre.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.genre.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    {{ form.platform }}
+                                <div class="mb-3">
                                     <label for="{{ form.platform.id_for_label }}">Platform</label>
+                                    {{ form.platform }}
+                                    {% if form.platform.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.platform.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Release Date</label>
                                     {{ form.release_date }}
-                                    <label for="{{ form.release_date.id_for_label }}">Release Date</label>
+                                    {% if form.release_date.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.release_date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Game Image</label>
                                     {{ form.image }}
+                                    {% if form.image.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.image.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                         <div class="row mb-3">
+                            </div class="col-md-11">
+                                <label for="{{ form.description.id_for_label }}">Description</label>
+                            </div>
                             <div class="col-md-12">
-                                <div class="form-floating mb-3">
+                                <div class=" form-floating mb-3">
                                     {{ form.description }}
-                                    <label for="{{ form.description.id_for_label }}">Description</label>
+                                    {% if form.description.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
