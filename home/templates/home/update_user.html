@@ -4,7 +4,7 @@
 {% bootstrap_css %}
 {% load socialaccount %}
 
-{% block title %}Update Profile - Video Game Rentals{% endblock %}
+{% block title %}Profile - Video Game Rentals{% endblock %}
 
 {% block content %}
 <main class="container mt-5 fade-in">
@@ -12,13 +12,16 @@
         <div class="col-md-8">
             <div class="d-flex align-items-center mb-4">
                 <i class="fas fa-user-edit text-primary me-3 fs-3"></i>
-                <h1 class="display-7 fw-bold mb-0">Update Profile Picture</h1>
+                <h1 class="display-7 fw-bold mb-0">Profile Settings</h1>
             </div>
             <p class="lead text-muted mb-4">Personalize your account with a profile image</p>
             <div class="d-flex justify-content-start mb-4">
                 <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
             </div>
-
+            <div class="text-center mb-4">
+                <p class="text-muted mb-1">Member since:</p>
+                <h5 class="fw-semibold">{{ request.user.date_joined|date:"F j, Y" }}</h5>
+            </div>
             <div class="card shadow mb-4">
                 <div class="card-body p-4">
                     <form method="POST" action="" enctype="multipart/form-data" class="mb-3">
