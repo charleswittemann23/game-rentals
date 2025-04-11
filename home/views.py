@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import UserProfile
-from .forms import ProfilePicForm
+from .forms import ProfileForm
 from django.urls import reverse
 
 
@@ -37,9 +37,13 @@ def update_user(request):
             }
         )
 
-        profile_form = ProfilePicForm(request.POST or None, request.FILES or None, instance=profile_user)
+        if request.method == 'POST':
+            profile_form = ProfileForm(request.POST, request.FILES, instance=profile_user)
 
-        if profile_form.is_valid():
-            profile_form.save()
-            return redirect(reverse('home:index'))
+            if profile_form.is_valid():
+                profile_form.save()
+                return redirect(reverse('home:index'))
+        else:
+            profile_form = ProfileForm(instance=profile_user)
+
         return render(request, 'home/update_user.html', {'profile_form': profile_form})
