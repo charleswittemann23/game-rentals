@@ -10,11 +10,6 @@ def index(request):
     role = "Patron"
     username = request.user.username
 
-    # if request.user.is_superuser:  # Check if user is an admin
-    #     return render(request, "home/admin.html")
-    # else:
-    #     return render(request, "home/index.html")
-
     if request.user.is_authenticated:
         try:
             # Retrieve role from UserProfile
@@ -22,32 +17,29 @@ def index(request):
             profileimage = request.user.userprofile.profile_pic
         except UserProfile.DoesNotExist:
             role = "Guest"  # If UserProfile is missing
-            profileimage="default"
+            profileimage = "default"
 
-    return render(request, 'home/index.html', {'role': role, 'username': username, 'profileimage': profileimage })
+    return render(request, 'home/index.html', {'role': role, 'username': username, 'profileimage': profileimage})
 
 
 def wishlist(request):
     return render(request, "home/wishlist.html")
 
 
+@login_required
 def update_user(request):
     if request.user.is_authenticated:
         profile_user, created = UserProfile.objects.get_or_create(
-        user=request.user,
-        defaults={
-        'role': 'default_role',
-        'profile_pic': 'images/default.jpg',
-        # Add other default fields here
-    }
-)
+            user=request.user,
+            defaults={
+                'role': 'default_role',
+                'profile_pic': 'images/default.jpg',
+            }
+        )
 
-        profile_form= ProfilePicForm(request.POST or None, request.FILES or None, instance=profile_user)
+        profile_form = ProfilePicForm(request.POST or None, request.FILES or None, instance=profile_user)
 
         if profile_form.is_valid():
             profile_form.save()
             return redirect(reverse('home:index'))
         return render(request, 'home/update_user.html', {'profile_form': profile_form})
-
-
-

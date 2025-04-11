@@ -1,207 +1,117 @@
-{% load static %}
-{% load bootstrap5 %}
-{% bootstrap_css %}
-{% load socialaccount %}
+{% extends 'base.html' %}
 {% load i18n %}
+{% load socialaccount %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Sign In" %} - Video Game Rentals</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body class="d-flex flex-column min-vh-100">
+{% block title %}Update Profile - Video Game Rentals{% endblock %}
 
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-gamepad me-2"></i>Game Rentals
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">
-                            <i class="fas fa-home me-1"></i> Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/catalog/">
-                            <i class="fas fa-book me-1"></i> Catalog
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/wishlist/">
-                            <i class="fas fa-heart me-1"></i> Wishlist
-                        </a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link btn btn-light text-dark px-3 ms-2" href="{% provider_login_url 'google' %}">
-                            <i class="fab fa-google me-1"></i> Login with Google
-                        </a>
-                    </li>
-                </ul>
+{% block content %}
+<main class="container mt-5 fade-in">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="d-flex align-items-center mb-4">
+                <i class="fas fa-sign-in-alt text-primary me-3 fs-3"></i>
+                <h1 class="display-7 fw-bold mb-0">{% trans "Sign In" %}</h1>
             </div>
-        </div>
-    </nav>
+            <p class="lead text-muted mb-4">{% trans "Log in to access your account and manage your rentals" %}</p>
+            <div class="d-flex justify-content-start mb-4">
+                <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
+            </div>
 
-    <main class="container mt-5 fade-in">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="d-flex align-items-center mb-4">
-                    <i class="fas fa-sign-in-alt text-primary me-3 fs-3"></i>
-                    <h1 class="display-7 fw-bold mb-0">{% trans "Sign In" %}</h1>
-                </div>
-                <p class="lead text-muted mb-4">{% trans "Log in to access your account and manage your rentals" %}</p>
-                <div class="d-flex justify-content-start mb-4">
-                    <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
-                </div>
+            <div class="card shadow mb-4">
+                <div class="card-body p-4">
+                    {% if socialaccount_providers %}
+                    <div class="mb-4">
+                        <p class="text-center">
+                            <a href="{% provider_login_url 'google' %}" class="btn btn-lg btn-outline-primary w-100">
+                                <i class="fab fa-google me-2"></i> {% trans "Sign in with Google" %}
+                            </a>
+                        </p>
+                        <div class="text-center text-muted my-3">
+                            <span>{% trans "Or use your username and password" %}</span>
+                        </div>
+                    </div>
+                    {% endif %}
 
-                <div class="card shadow mb-4">
-                    <div class="card-body p-4">
-                        {% if socialaccount_providers %}
-                        <div class="mb-4">
-                            <p class="text-center">
-                                <a href="{% provider_login_url 'google' %}" class="btn btn-lg btn-outline-primary w-100">
-                                    <i class="fab fa-google me-2"></i> {% trans "Sign in with Google" %}
-                                </a>
-                            </p>
-                            <div class="text-center text-muted my-3">
-                                <span>{% trans "Or use your username and password" %}</span>
-                            </div>
+                    <form class="login" method="POST" action="{% url 'account_login' %}">
+                        {% csrf_token %}
+
+                        {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% if form.non_field_errors %}
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            {% else %}
+                                {% trans "Please check your login credentials and try again." %}
+                            {% endif %}
                         </div>
                         {% endif %}
-                        
-                        <form class="login" method="POST" action="{% url 'account_login' %}">
-                            {% csrf_token %}
-                            
-                            {% if form.errors %}
-                            <div class="alert alert-danger" role="alert">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                {% if form.non_field_errors %}
-                                    {% for error in form.non_field_errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                {% else %}
-                                    {% trans "Please check your login credentials and try again." %}
-                                {% endif %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.login.id_for_label }}" class="form-label">
+                                <i class="fas fa-user me-1"></i> {% trans "Username or Email" %}
+                            </label>
+                            <input type="text" name="{{ form.login.html_name }}" id="{{ form.login.id_for_label }}"
+                                   class="form-control {% if form.login.errors %}is-invalid{% endif %}"
+                                   placeholder="{% trans 'Enter your username or email' %}" required>
+                            {% if form.login.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.login.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
                             {% endif %}
-                            
-                            <div class="mb-3">
-                                <label for="{{ form.login.id_for_label }}" class="form-label">
-                                    <i class="fas fa-user me-1"></i> {% trans "Username or Email" %}
-                                </label>
-                                <input type="text" name="{{ form.login.html_name }}" id="{{ form.login.id_for_label }}" 
-                                       class="form-control {% if form.login.errors %}is-invalid{% endif %}" 
-                                       placeholder="{% trans 'Enter your username or email' %}" required>
-                                {% if form.login.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in form.login.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                <i class="fas fa-lock me-1"></i> {% trans "Password" %}
+                            </label>
+                            <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}"
+                                   class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                                   placeholder="{% trans 'Enter your password' %}" required>
+                            {% if form.password.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.password.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
-                            
-                            <div class="mb-3">
-                                <label for="{{ form.password.id_for_label }}" class="form-label">
-                                    <i class="fas fa-lock me-1"></i> {% trans "Password" %}
-                                </label>
-                                <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}" 
-                                       class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
-                                       placeholder="{% trans 'Enter your password' %}" required>
-                                {% if form.password.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in form.password.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="mb-4 d-flex justify-content-between align-items-center">
-                                <div class="form-check">
-                                    <input type="checkbox" name="{{ form.remember.html_name }}" id="{{ form.remember.id_for_label }}" 
-                                           class="form-check-input">
-                                    <label for="{{ form.remember.id_for_label }}" class="form-check-label">
-                                        {% trans "Remember me" %}
-                                    </label>
-                                </div>
-                                <a href="{% url 'account_reset_password' %}" class="text-primary text-decoration-none">
-                                    <i class="fas fa-question-circle me-1"></i> {% trans "Forgot Password?" %}
-                                </a>
-                            </div>
-                            
-                            {% if redirect_field_value %}
-                            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                             {% endif %}
-                            
-                            <div class="d-grid gap-2 mt-4">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-sign-in-alt me-1"></i> {% trans "Sign In" %}
-                                </button>
+                        </div>
+
+                        <div class="mb-4 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input type="checkbox" name="{{ form.remember.html_name }}" id="{{ form.remember.id_for_label }}"
+                                       class="form-check-input">
+                                <label for="{{ form.remember.id_for_label }}" class="form-check-label">
+                                    {% trans "Remember me" %}
+                                </label>
                             </div>
-                        </form>
-                    </div>
-                </div>
-                
-                <div class="text-center mt-4">
-                    <p>{% trans "Don't have an account yet?" %} <a href="{% url 'account_signup' %}" class="text-primary text-decoration-none">
-                        <i class="fas fa-user-plus me-1"></i> {% trans "Sign up here" %}
-                    </a></p>
+                            <a href="{% url 'account_reset_password' %}" class="text-primary text-decoration-none">
+                                <i class="fas fa-question-circle me-1"></i> {% trans "Forgot Password?" %}
+                            </a>
+                        </div>
+
+                        {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                        {% endif %}
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-sign-in-alt me-1"></i> {% trans "Sign In" %}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
-    </main>
 
-    <footer class="mt-auto py-4 text-white text-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <h6 class="text-uppercase mb-3">Quick Links</h6>
-                    <ul class="list-unstyled mb-0">
-                        <li><a href="#" class="text-white">About Us</a></li>
-                        <li><a href="#" class="text-white">Contact</a></li>
-                        <li><a href="#" class="text-white">Support</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <h6 class="text-uppercase mb-3">Connect With Us</h6>
-                    <div class="d-flex justify-content-center">
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <h6 class="text-uppercase mb-3">Newsletter</h6>
-                    <div class="input-group">
-                        <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
-                        <button class="btn btn-outline-light" type="button">Subscribe</button>
-                    </div>
-                </div>
+            <div class="text-center mt-4">
+                <p>{% trans "Don't have an account yet?" %} <a href="{% url 'account_signup' %}" class="text-primary text-decoration-none">
+                    <i class="fas fa-user-plus me-1"></i> {% trans "Sign up here" %}
+                </a></p>
             </div>
-            <hr class="my-4" style="background-color: rgba(255, 255, 255, 0.2);">
-            <p class="small mb-0">© 2025 Team A-18 - Video Game Rentals. All rights reserved.</p>
         </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html> 
+    </div>
+</main>
+{% endblock %}
