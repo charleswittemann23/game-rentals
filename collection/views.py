@@ -36,7 +36,7 @@ def create_collection(request):
 def view_collection(request, pk):
     collection = get_object_or_404(Collection, pk=pk)
 
-    if collection.is_private and collection.creator != request.user and request.user.userprofile.role != 'Librarian':
+    if collection.is_private and request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to view this private collection.')
         return redirect('collection')
 
@@ -47,7 +47,7 @@ def view_collection(request, pk):
 def edit_collection(request, pk):
     collection = get_object_or_404(Collection, pk=pk)
 
-    if collection.creator != request.user or request.user.userprofile.role != 'Librarian':
+    if collection.creator != request.user and request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to edit this collection.')
         return redirect('collection')
 
@@ -68,8 +68,7 @@ def edit_collection(request, pk):
 def delete_collection(request, pk):
     collection = get_object_or_404(Collection, pk=pk)
 
-    # Only allow creator to delete
-    if collection.creator != request.user:
+    if collection.creator != request.user and request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to delete this collection.')
         return redirect('collection')
 
@@ -78,5 +77,4 @@ def delete_collection(request, pk):
         messages.success(request, 'Collection deleted successfully!')
         return redirect('collection')
 
-    return render(request, 'collection/delete_collection.html',
-                  {'collection': collection})
+    return render(request, 'collection/delete_collection.html', {'collection': collection})
