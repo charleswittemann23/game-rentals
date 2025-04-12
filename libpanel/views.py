@@ -38,8 +38,16 @@ def update_user(request, user_id):
 
 
 @login_required
-def requests(request):
+def game_requests(request):
     if request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to view.')
         return redirect('home:index')
-    return render(request, "requests.html")
+    return render(request, "game_requests.html")
+
+
+@login_required
+def collection_requests(request):
+    if request.user.userprofile.role != 'Librarian':
+        messages.error(request, 'You do not have permission to view.')
+        return redirect('home:index')
+    return render(request, "collection_requests.html")
