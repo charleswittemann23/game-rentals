@@ -39,9 +39,9 @@
                                     <div class="d-flex align-items-center gap-2">
                                         {% if collection.is_private and not user.userprofile.role == 'Librarian' and user != collection.creator %}
                                             {% if not collection|has_pending_request:user and not collection|has_approved_request:user %}
-                                                <form method="POST" action="{% url 'collection:request_access' collection.id %}" style="display: inline;">
+                                                <form method="POST" action="{% url 'collection:request_access' collection.id %}" style="display: inline; margin: 0;">
                                                     {% csrf_token %}
-                                                    <button type="submit" class="btn btn-warning btn-sm">
+                                                    <button type="submit" class="badge bg-warning text-dark border-0" style="cursor: pointer;">
                                                         Request Access
                                                     </button>
                                                 </form>
