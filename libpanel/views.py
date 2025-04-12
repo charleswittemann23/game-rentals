@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from collection.models import CollectionAccessRequest
 
 
 @login_required
@@ -50,4 +51,10 @@ def collection_requests(request):
     if request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to view.')
         return redirect('home:index')
-    return render(request, "collection_requests.html")
+    
+    # Get all pending access requests
+    pending_requests = CollectionAccessRequest.objects.filter(status=CollectionAccessRequest.PENDING)
+    
+    return render(request, "collection_requests.html", {
+        'pending_requests': pending_requests
+    })

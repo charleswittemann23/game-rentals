@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Collection Access Requests{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Collection Access Requests</h2>
+    
+    {% if pending_requests %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Collection</th>
+                        <th>Requested By</th>
+                        <th>Date Requested</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in pending_requests %}
+                        <tr>
+                            <td>{{ request.collection.name }}</td>
+                            <td>{{ request.user.username }}</td>
+                            <td>{{ request.created_at|date:"F j, Y" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'collection:handle_access_request' request.id 'approve' %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'collection:handle_access_request' request.id 'reject' %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No pending collection access requests.
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

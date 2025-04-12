@@ -2,13 +2,19 @@ from .models import Game
 from django.shortcuts import render, redirect
 from .forms import GameForm
 from django.contrib.auth.decorators import login_required
+from collection.models import Collection
 
 
 def index(request):
-    games = Game.objects.all()
+    # Get all public collections
+    public_collections = Collection.objects.filter(is_private=False)
+    
+    # Get all games that belong to collections
+    games = Game.objects.filter(collections__isnull=False)
 
     return render(request, "catalog/index.html", {
         "games": games,
+        "public_collections": public_collections,
     })
 
 
@@ -21,7 +27,7 @@ def add_game(request):
         form = GameForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('catalog')
+            return redirect('catalog:index')
     else:
         form = GameForm()
 

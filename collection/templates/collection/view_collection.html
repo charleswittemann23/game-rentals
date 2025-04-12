@@ -17,10 +17,10 @@
 
         {% if user == collection.creator or user.userprofile.role == 'Librarian' %}
         <div class="btn-group">
-            <a href="{% url 'edit_collection' collection.pk %}" class="btn btn-outline-primary">
+            <a href="{% url 'collection:edit_collection' collection.pk %}" class="btn btn-outline-primary">
                 <i class="fas fa-edit me-2"></i>Edit
             </a>
-            <a href="{% url 'delete_collection' collection.pk %}" class="btn btn-outline-danger">
+            <a href="{% url 'collection:delete_collection' collection.pk %}" class="btn btn-outline-danger">
                 <i class="fas fa-trash me-2"></i>Delete
             </a>
         </div>
