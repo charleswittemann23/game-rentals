@@ -35,7 +35,6 @@ def create_collection(request):
     return render(request, 'collection/create_collection.html', {'form': form})
 
 
-@login_required
 def view_collection(request, pk):
     collection = get_object_or_404(Collection, pk=pk)
 
