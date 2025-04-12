@@ -6,7 +6,10 @@ from django.contrib import messages
 
 
 def index(request):
-    collections = Collection.objects.all()
+    if request.user.is_authenticated:
+        collections = Collection.objects.all()
+    else:
+        collections = Collection.objects.filter(is_private=False)
 
     return render(request, "collection/index.html", {
         "collections": collections
