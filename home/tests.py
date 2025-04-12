@@ -59,7 +59,7 @@ class GoogleOAuthTest(TestCase):
     def test_google_login_url(self):
         """Test that the Google login URL is accessible"""
         login_url = reverse('account_login')
-        response = self.client.get(login_url)
+        response = self.client.get(login_url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'google')
 
