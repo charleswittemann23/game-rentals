@@ -41,57 +41,33 @@
     </div>
     {% endif %}
 
-    <!-- Collections Section -->
-    {% if public_collections %}
+    {% if collections %}
     <div class="row mb-5">
         <div class="col-12">
-            <h2 class="h4 mb-4">Public Collections</h2>
+            <h2 class="h4 mb-4">Collections</h2>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {% for collection in public_collections %}
+                {% for collection in collections %}
                 <div class="col">
-                    <div class="card h-100 shadow-sm">
+                    {% if not collection.is_private or user == collection.creator or user.userprofile.role == 'Librarian' %}
+                    <a href="{% url 'view_collection' collection.pk %}" class="text-decoration-none text-dark">
+                    {% endif %}
+                    <div class="card h-100 shadow-sm {% if not collection.is_private or user == collection.creator or user.userprofile.role == 'Librarian' %}cursor-pointer{% endif %}">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">{{ collection.name }}</h5>
-                                <div class="d-flex align-items-center">
-                                    {% if user.userprofile.role == 'Librarian' %}
-                                    <span class="badge {% if collection.is_private %}bg-danger{% else %}bg-success{% endif %} me-2">
-                                        {% if collection.is_private %}Private{% else %}Public{% endif %}
-                                    </span>
+                                <div>
+                                    {% if collection.is_private %}
+                                    <span class="badge bg-danger">Private</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Public</span>
                                     {% endif %}
-                                    {% if user == collection.creator %}
-                                    <div class="dropdown">
-                                        <button class="btn btn-link text-dark p-0" type="button" data-bs-toggle="dropdown">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li>
-                                                <a class="dropdown-item" href="{% url 'edit_collection' collection.pk %}">
-                                                    <i class="fas fa-edit me-2"></i> Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" href="{% url 'delete_collection' collection.pk %}">
-                                                    <i class="fas fa-trash me-2"></i> Delete
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <p class="card-text text-muted small mb-3">Created by {{ collection.creator.username }}</p>
-                            <p class="card-text">{{ collection.description }}</p>
-                            <div class="mt-3">
-                                <h6 class="mb-2">Games in Collection:</h6>
-                                <div class="d-flex flex-wrap gap-2">
-                                    {% for game in collection.games.all %}
-                                    <span class="badge bg-primary">{{ game.title }}</span>
-                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {% if not collection.is_private or user == collection.creator or user.userprofile.role == 'Librarian' %}
+                    </a>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>

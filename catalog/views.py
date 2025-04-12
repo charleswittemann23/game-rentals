@@ -7,13 +7,11 @@ from django.contrib import messages
 
 def index(request):
     games = Game.objects.all()
-    if request.user.is_authenticated and request.user.userprofile.role == 'Librarian':
-        collections = Collection.objects.all()
-    else:
-        collections = Collection.objects.filter(is_private=False)
+    collections = Collection.objects.all()
+
     return render(request, "catalog/index.html", {
         "games": games,
-        "public_collections": collections
+        "collections": collections  # renamed from "public_collections"
     })
 
 
@@ -51,6 +49,16 @@ def create_collection(request):
     
     return render(request, 'catalog/create_collection.html', {'form': form})
 
+@login_required
+def view_collection(request, pk):
+    collection = get_object_or_404(Collection, pk=pk)
+
+    # Allow viewing if it's public, or user is creator/librarian
+    if collection.is_private and collection.creator != request.user and request.user.userprofile.role != 'Librarian':
+        messages.error(request, 'You do not have permission to view this private collection.')
+        return redirect('catalog')
+
+    return render(request, 'catalog/view_collection.html', {'collection': collection})
 
 @login_required
 def edit_collection(request, pk):
