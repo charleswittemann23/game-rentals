@@ -22,11 +22,13 @@ def index(request):
         ).values_list('collection_id', flat=True)
         
         # Filter games to show:
-        # 1. Games from public collections
-        # 2. Games from private collections the user has access to
+        # 1. Games that are in public collections
+        # 2. Games that are in private collections the user has access to
+        # 3. Games that are not in any collection
         games = games.filter(
             Q(collections__is_private=False) |  # Public collections
-            Q(collections__id__in=approved_requests)  # Private collections with approved access
+            Q(collections__id__in=approved_requests) |  # Private collections with access
+            ~Q(collections__isnull=False)  # Games not in any collection
         ).distinct()
     elif not request.user.is_authenticated:
         # For non-authenticated users, only show games from public collections
