@@ -19,6 +19,7 @@
 
             <div class="card shadow mb-4">
                 <div class="card-body p-4">
+                    {% get_providers as socialaccount_providers %}
                     {% if socialaccount_providers %}
                     <div class="mb-4">
                         <p class="text-center">
