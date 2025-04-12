@@ -8,7 +8,6 @@ from django.urls import reverse
 def index(request):
     username = None
     profileimage = None
-    role = "Guest"
 
     if request.user.is_authenticated:
         username = request.user.username
@@ -17,12 +16,9 @@ def index(request):
         except:
             profileimage = "default"
 
-        role = getattr(request.user, 'role', 'Patron')
-
     context = {
         'username': username,
-        'profileimage': profileimage,
-        'role': role
+        'profileimage': profileimage
     }
 
     return render(request, 'home/index.html', context)

@@ -38,19 +38,14 @@
                     
                     <hr>
 
-                    {% if role == "Librarian" %}
+                    {% if user.userprofile.role == "Librarian" %}
                         <div class="alert alert-primary d-flex align-items-center" role="alert">
                             <i class="fas fa-crown me-2 fs-4"></i>
                             <div>
                                 Welcome, <strong>Librarian</strong>! You have administrative privileges.
                             </div>
                         </div>
-                        <div class="text-center mt-3">
-                            <a href="/admin/" class="btn btn-primary">
-                                <i class="fas fa-cogs me-1"></i> Access Admin Panel
-                            </a>
-                        </div>
-                    {% elif role == "Patron" %}
+                    {% elif user.userprofile.role == "Patron" %}
                         <div class="alert alert-success d-flex align-items-center" role="alert">
                             <i class="fas fa-check-circle me-2 fs-4"></i>
                             <div>
