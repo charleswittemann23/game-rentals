@@ -51,6 +51,15 @@
                             <i class="fas fa-heart me-1"></i> Wishlist
                         </a>
                     </li>
+                    {% if user.is_authenticated %}
+                        {% if user.userprofile.role == 'Librarian' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'libpanel' %}">
+                                <i class="fas fa-heart me-1"></i> Librarian Tools
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endif %}
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}

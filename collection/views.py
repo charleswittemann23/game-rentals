@@ -38,7 +38,7 @@ def view_collection(request, pk):
 
     if collection.is_private and collection.creator != request.user and request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to view this private collection.')
-        return redirect('catalog')
+        return redirect('collection')
 
     return render(request, 'collection/view_collection.html', {'collection': collection})
 
@@ -47,8 +47,7 @@ def view_collection(request, pk):
 def edit_collection(request, pk):
     collection = get_object_or_404(Collection, pk=pk)
 
-    # Only allow creator to edit
-    if collection.creator != request.user:
+    if collection.creator != request.user or request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to edit this collection.')
         return redirect('collection')
 

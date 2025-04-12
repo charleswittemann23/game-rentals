@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'home',
     'catalog',
     'collection',
+    'libpanel',
     'bootstrap5',
     "whitenoise.runserver_nostatic",
     'django.contrib.admin',
