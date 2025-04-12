@@ -20,6 +20,7 @@
 
             <div class="card shadow mb-4">
                 <div class="card-body p-4">
+                    {% if user.is_authenticated %}
                     <div class="d-flex align-items-center mb-3">
                         <div class="bg-primary bg-gradient rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
                             <i class="fas fa-user text-white"></i>
@@ -33,17 +34,11 @@
                             </p>
                         </div>
                     </div>
+                    {% endif %}
                     
                     <hr>
 
-                    {% if role == "Guest" %}
-                        <div class="alert alert-info d-flex align-items-center" role="alert">
-                            <i class="fas fa-info-circle me-2 fs-4"></i>
-                            <div>
-                                You are currently browsing as a <strong>Guest</strong>. Try utilizing the Google login button at the top right for full access.
-                            </div>
-                        </div>
-                    {% elif role == "Librarian" %}
+                    {% if role == "Librarian" %}
                         <div class="alert alert-primary d-flex align-items-center" role="alert">
                             <i class="fas fa-crown me-2 fs-4"></i>
                             <div>
@@ -63,10 +58,10 @@
                             </div>
                         </div>
                     {% else %}
-                        <div class="alert alert-warning d-flex align-items-center" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2 fs-4"></i>
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="fas fa-info-circle me-2 fs-4"></i>
                             <div>
-                                Your role is <strong>unassigned</strong>. Please contact support.
+                                You are currently browsing as a <strong>Guest</strong>. Try utilizing the Google login button at the top right for full access.
                             </div>
                         </div>
                     {% endif %}

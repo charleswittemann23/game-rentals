@@ -5,21 +5,27 @@ from .forms import ProfileForm
 from django.urls import reverse
 
 
-@login_required
 def index(request):
-    role = "Patron"
-    username = request.user.username
+    username = None
+    profileimage = None
+    role = "Guest"
 
     if request.user.is_authenticated:
+        username = request.user.username
         try:
-            # Retrieve role from UserProfile
-            role = request.user.userprofile.role
             profileimage = request.user.userprofile.profile_pic
-        except UserProfile.DoesNotExist:
-            role = "Guest"  # If UserProfile is missing
+        except:
             profileimage = "default"
 
-    return render(request, 'home/index.html', {'role': role, 'username': username, 'profileimage': profileimage})
+        role = getattr(request.user, 'role', 'Patron')
+
+    context = {
+        'username': username,
+        'profileimage': profileimage,
+        'role': role
+    }
+
+    return render(request, 'home/index.html', context)
 
 
 def wishlist(request):
