@@ -42,6 +42,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'collection' %}">
+                            <i class="fas fa-book me-1"></i> Collections
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'home:wishlist' %}">
                             <i class="fas fa-heart me-1"></i> Wishlist
                         </a>
@@ -49,13 +54,6 @@
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
-                        {% if user.userprofile.role == 'Librarian' %}
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-success text-white px-3 ms-2" href="{% url 'add_game' %}">
-                                    <i class="fas fa-plus-circle me-1"></i> Add Game
-                                </a>
-                            </li>
-                        {% endif %}
                         <li class="nav-item" style="align-self: center">
                             <a class="nav-link" href="{% url 'home:update_user' %}">
                                 <i class="fa-solid fa-gear"></i>

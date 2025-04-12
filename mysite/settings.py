@@ -62,6 +62,7 @@ else:
 INSTALLED_APPS = [
     'home',
     'catalog',
+    'collection',
     'bootstrap5',
     "whitenoise.runserver_nostatic",
     'django.contrib.admin',

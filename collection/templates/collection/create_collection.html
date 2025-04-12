@@ -1,8 +1,4 @@
 {% extends 'base.html' %}
-{% load static %}
-{% load bootstrap5 %}
-{% bootstrap_css %}
-{% load socialaccount %}
 
 {% block title %}Create Collection - {{ block.super }}{% endblock %}
 
@@ -104,8 +100,8 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-1"></i> Create Collection
                             </button>
-                            <a href="{% url 'catalog' %}" class="btn btn-outline-secondary ms-2">
-                                <i class="fas fa-arrow-left me-1"></i> Back to Catalog
+                            <a href="{% url 'collection' %}" class="btn btn-outline-secondary ms-2">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Collections
                             </a>
                         </div>
                     </form>
