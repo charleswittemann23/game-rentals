@@ -40,10 +40,10 @@ class GameFormTest(TestCase):
         self.assertIn('title', form.errors)
         self.assertIn('description', form.errors)
         # Add other required fields as needed
-        
+
     def test_game_form_invalid_date(self):
         invalid_data = self.game_data.copy()
         invalid_data['release_date'] = 'not-a-date'
-        form = GameForm(data=invalid_data)
+        form = GameForm(data=invalid_data, files=self.game_files)
         self.assertFalse(form.is_valid())
         self.assertIn('release_date', form.errors)

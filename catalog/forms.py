@@ -5,8 +5,13 @@ from .models import Game, Comment, Rating
 class GameForm(forms.ModelForm):
     class Meta:
         model = Game
-        fields = ['title', 'description', 'genre', 'platform', 'location', 'image']
+        fields = ['title', 'description', 'release_date', 'genre', 'platform', 'image', 'location']
         widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter game title'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Describe the game', 'rows': 3}),
+            'release_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'genre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Action'}),
+            'platform': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., PC, Xbox'}),
             'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Main Library, Shelf A-1'}),
         }
 
