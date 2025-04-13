@@ -16,7 +16,10 @@ def index(request):
     
     # Start with all games
     games = Game.objects.all()
+    search_query = request.GET.get('search', '')
     
+    if search_query:
+        games = games.filter(title__icontains=search_query)
     # If user is authenticated and not a Librarian, filter games based on access
     if request.user.is_authenticated and request.user.userprofile.role == 'Patron':
         # Get IDs of private collections the user has access to
@@ -41,12 +44,7 @@ def index(request):
         # For Librarians, show all games
         games = games.distinct()
 
-    # Debug print to check the number of games
-    print(f"Number of games found: {games.count()}")
-    print(f"Games: {list(games.values_list('title', flat=True))}")
-    print(f"User role: {request.user.userprofile.role if request.user.is_authenticated else 'not authenticated'}")
-    print(f"Approved requests: {list(approved_requests) if request.user.is_authenticated and request.user.userprofile.role == 'Patron' else 'N/A'}")
-
+    
     return render(request, "index.html", {
         "games": games,
         "public_collections": public_collections,

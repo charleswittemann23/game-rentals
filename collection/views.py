@@ -7,11 +7,22 @@ from django.http import JsonResponse
 
 
 def index(request):
-    if request.user.is_authenticated:
-        collections = Collection.objects.all()
+    search_query = request.GET.get('search', '')
+    
+    if search_query:
+        # Filter collections based on search query
+        search = Collection.objects.filter(name__icontains=search_query)
     else:
-        collections = Collection.objects.filter(is_private=False)
-
+        # Get all collections
+        search = Collection.objects.all()
+    
+    # Add any additional filtering (e.g., for private collections) as needed
+    if request.user.is_authenticated:
+        collections = search.all()
+    else:
+        collections = search.filter(is_private=False)
+    
+    # Simply pass the collections directly
     return render(request, "collection/index.html", {
         "collections": collections
     })
