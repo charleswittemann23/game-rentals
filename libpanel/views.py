@@ -11,14 +11,6 @@ from django.db import transaction
 
 
 @login_required
-def index(request):
-    if request.user.userprofile.role != 'Librarian':
-        messages.error(request, 'You do not have permission to view.')
-        return redirect('home:index')
-    return render(request, "libpanel/index.html")
-
-
-@login_required
 def users(request):
     if request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to view.')
@@ -165,7 +157,7 @@ def reject_borrow_request(request, request_id):
 
 
 @login_required
-def collection_requests(request):
+def requests(request):
     if request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to view.')
         return redirect('home:index')
@@ -176,7 +168,7 @@ def collection_requests(request):
     # Get pending game borrow requests
     borrow_requests = BorrowRequest.objects.filter(status='pending').order_by('request_date')
     
-    return render(request, "libpanel/collection_requests.html", {
+    return render(request, "libpanel/requests.html", {
         'access_requests': access_requests,
         'borrow_requests': borrow_requests
     })

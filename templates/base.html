@@ -66,7 +66,12 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="librarianDropdown">
                                 <li>
-                                    <a class="dropdown-item" href="{% url 'libpanel:index' %}">
+                                    <a class="dropdown-item" href="{% url 'libpanel:users' %}">
+                                        <i class="fa-solid fa-users"></i> Manage Users
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'libpanel:requests' %}">
                                         <i class="fas fa-clipboard-list me-1"></i> Manage Requests
                                     </a>
                                 </li>
