@@ -1,5 +1,5 @@
 from .models import Game
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from .forms import GameForm
 from django.contrib.auth.decorators import login_required
 
@@ -7,9 +7,14 @@ from django.contrib.auth.decorators import login_required
 def index(request):
     games = Game.objects.all()
 
-    return render(request, "catalog/index.html", {
+    return render(request, "index.html", {
         "games": games,
     })
+
+
+def game_detail(request, upc):
+    game = get_object_or_404(Game, upc=upc)
+    return render(request, 'game_detail.html', {'game': game})
 
 
 @login_required
@@ -25,4 +30,4 @@ def add_game(request):
     else:
         form = GameForm()
 
-    return render(request, 'catalog/add_game.html', {'form': form})
+    return render(request, 'add_game.html', {'form': form})

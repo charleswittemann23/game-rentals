@@ -44,24 +44,26 @@
             <h2 class="h4 mb-4">Available Games</h2>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 {% for game in games %}
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <img src="{{ game.image.url }}" class="card-img-top" alt="{{ game.title }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ game.title }}</h5>
-                            <p class="card-text">{{ game.description }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="badge bg-primary me-2">{{ game.genre }}</span>
-                                    <span class="badge bg-secondary">{{ game.platform }}</span>
-                                </div>
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <a href="{% url 'game_detail' game.upc %}">
+                                <img src="{{ game.image.url }}" class="card-img-top" alt="{{ game.title }}">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ game.title }}</h5>
+                                <p class="card-text">{{ game.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-primary me-2">{{ game.genre }}</span>
+                                        <span class="badge bg-secondary">{{ game.platform }}</span>
+                                    </div>
                                 <span class="text-muted">{{ game.release_date|date:"Y" }}</span>
+                            </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 {% endfor %}
-            </div>
+                </div>
         </div>
     </div>
 </main>
