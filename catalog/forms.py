@@ -5,7 +5,10 @@ from .models import Game, Comment, Rating
 class GameForm(forms.ModelForm):
     class Meta:
         model = Game
-        fields = ['title', 'description', 'genre', 'platform', 'image']
+        fields = ['title', 'description', 'genre', 'platform', 'location', 'image']
+        widgets = {
+            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Main Library, Shelf A-1'}),
+        }
 
 
 class CommentForm(forms.ModelForm):

@@ -63,7 +63,10 @@
                                 <p class="card-text">
                                     <small class="text-muted">
                                         Platform: {{ game.platform }}<br>
-                                        Genre: {{ game.genre }}
+                                        Genre: {{ game.genre }}<br>
+                                        {% if game.location %}
+                                            Location: {{ game.location }}<br>
+                                        {% endif %}
                                         {% if user.is_authenticated %}
                                         <br>UPC: {{ game.upc }}
                                         {% endif %}

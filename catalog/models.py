@@ -30,6 +30,7 @@ class Game(models.Model):
     release_date = models.DateField(default=timezone.now)
     genre = models.CharField(max_length=100, default='Unknown')
     platform = models.CharField(max_length=100, default='Unknown')
+    location = models.CharField(max_length=100, default='', blank=True)
     image = models.ImageField(upload_to='game_images/')
     upc = models.CharField(max_length=12, unique=True, blank=True, editable=False)
     created_at = models.DateTimeField(default=timezone.now)
