@@ -47,7 +47,7 @@ def approve_collection_access_request(request, request_id):
 
     if access_request.status != CollectionAccessRequest.PENDING:
         messages.warning(request, 'This request has already been processed.')
-        return redirect('libpanel:collection_requests')
+        return redirect('libpanel:requests')
 
     try:
         unavailable_games = []
@@ -84,7 +84,7 @@ def approve_collection_access_request(request, request_id):
     except Exception as e:
         messages.error(request, f'An error occurred: {str(e)}')
 
-    return redirect('libpanel:collection_requests')
+    return redirect('libpanel:requests')
 
 @login_required
 @require_POST
@@ -99,7 +99,7 @@ def reject_access_request(request, request_id):
 
     if access_request.status != CollectionAccessRequest.PENDING:
         messages.warning(request, 'This request has already been processed.')
-        return redirect('libpanel:collection_requests')
+        return redirect('libpanel:requests')
 
     # Mark the request as rejected
     access_request.status = CollectionAccessRequest.REJECTED
@@ -107,7 +107,7 @@ def reject_access_request(request, request_id):
     access_request.save()
 
     messages.success(request, 'Collection access request rejected.')
-    return redirect('libpanel:collection_requests')
+    return redirect('libpanel:requests')
 
 @login_required
 @require_POST
@@ -135,7 +135,7 @@ def approve_borrow_request(request, request_id):
     except BorrowRequest.DoesNotExist:
         messages.error(request, 'Borrow request not found.')
     
-    return redirect('libpanel:collection_requests')
+    return redirect('libpanel:requests')
 
 
 @login_required
@@ -153,7 +153,7 @@ def reject_borrow_request(request, request_id):
     except BorrowRequest.DoesNotExist:
         messages.error(request, 'Borrow request not found.')
     
-    return redirect('libpanel:collection_requests')
+    return redirect('libpanel:requests')
 
 
 @login_required
