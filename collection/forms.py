@@ -1,6 +1,6 @@
 from django import forms
 from catalog.models import Game
-from .models import Collection
+from .models import Collection, CollectionAccessRequest
 
 
 class CollectionForm(forms.ModelForm):
@@ -30,3 +30,12 @@ class CollectionForm(forms.ModelForm):
                 required=False,
                 widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
             )
+
+class CollectionAccessRequestForm(forms.ModelForm):
+    class Meta:
+        model = CollectionAccessRequest
+        fields = ['collection', 'requester']
+        widgets = {
+            'collection': forms.HiddenInput(),
+            'requester': forms.HiddenInput(),
+        }

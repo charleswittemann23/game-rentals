@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Borrow Requests - Video Game Rentals{% endblock %}
+
+{% block content %}
+<main class="container mt-5 fade-in">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-clipboard-list text-primary me-3 fs-3"></i>
+                    <h1 class="display-7 fw-bold mb-0">Manage Borrow Requests</h1>
+                </div>
+                <a href="{% url 'catalog:index' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Catalog
+                </a>
+            </div>
+            <p class="lead text-muted mb-4">Review and process game borrow requests</p>
+            <div class="d-flex justify-content-start mb-4">
+                <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if pending_requests %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Game</th>
+                                <th>Requester</th>
+                                <th>Request Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in pending_requests %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if request.game.image %}
+                                                <img src="{{ request.game.image.url }}" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;" alt="{{ request.game.title }}">
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ request.game.title }}</h6>
+                                                <small class="text-muted">{{ request.game.platform }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ request.requester.get_full_name|default:request.requester.username }}</td>
+                                    <td>{{ request.request_date|date:"F j, Y" }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'catalog:approve_borrow_request' request.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check me-1"></i> Approve
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'catalog:reject_borrow_request' request.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-times me-1"></i> Reject
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    There are no pending borrow requests.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %} 
