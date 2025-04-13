@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -7,6 +7,7 @@ from collection.models import CollectionAccessRequest
 from catalog.models import BorrowRequest, Loan
 from datetime import timedelta
 from django.utils import timezone
+from django.db import transaction
 
 
 @login_required
@@ -43,18 +44,78 @@ def update_user(request, user_id):
 
 
 @login_required
-def game_requests(request):
-    if request.user.userprofile.role != 'Librarian':
-        messages.error(request, 'You do not have permission to view.')
-        return redirect('home:index')
-    
-    # Get pending borrow requests
-    borrow_requests = BorrowRequest.objects.filter(status='PENDING').order_by('request_date')
-    
-    return render(request, "libpanel/game_requests.html", {
-        'borrow_requests': borrow_requests
-    })
+@require_POST
+def approve_collection_access_request(request, request_id):
+    access_request = get_object_or_404(CollectionAccessRequest, id=request_id)
+    collection = access_request.collection
 
+    if collection.creator != request.user:
+        messages.error(request, 'You do not have permission to approve this request.')
+        return redirect('home:index')
+
+    if access_request.status != CollectionAccessRequest.PENDING:
+        messages.warning(request, 'This request has already been processed.')
+        return redirect('libpanel:collection_requests')
+
+    try:
+        unavailable_games = []
+
+        with transaction.atomic():
+            access_request.status = CollectionAccessRequest.APPROVED
+            access_request.updated_at = timezone.now()
+            access_request.save()
+
+            # Optional: Add to shared_with if such a field exists
+            if hasattr(collection, 'shared_with'):
+                collection.shared_with.add(access_request.requester)
+
+            for game in collection.games.all():
+                is_on_loan = Loan.objects.filter(game=game, return_date__isnull=True).exists()
+                if is_on_loan:
+                    unavailable_games.append(game.title)
+                    continue
+
+                Loan.objects.create(
+                    game=game,
+                    borrower=access_request.requester,
+                    borrow_date=timezone.now(),
+                    due_date=timezone.now() + timedelta(days=14)
+                )
+
+        if unavailable_games:
+            messages.warning(
+                request,
+                f'Request approved, but the following games are currently unavailable: {", ".join(unavailable_games)}.'
+            )
+        else:
+            messages.success(request, 'Collection access request approved and all loans created.')
+    except Exception as e:
+        messages.error(request, f'An error occurred: {str(e)}')
+
+    return redirect('libpanel:collection_requests')
+
+@login_required
+@require_POST
+def reject_access_request(request, request_id):
+    access_request = get_object_or_404(CollectionAccessRequest, id=request_id)
+    collection = access_request.collection
+
+    # Ensure only the collection's creator can reject requests
+    if collection.creator != request.user:
+        messages.error(request, 'You do not have permission to reject this request.')
+        return redirect('home:index')
+
+    if access_request.status != CollectionAccessRequest.PENDING:
+        messages.warning(request, 'This request has already been processed.')
+        return redirect('libpanel:collection_requests')
+
+    # Mark the request as rejected
+    access_request.status = CollectionAccessRequest.REJECTED
+    access_request.updated_at = timezone.now()
+    access_request.save()
+
+    messages.success(request, 'Collection access request rejected.')
+    return redirect('libpanel:collection_requests')
 
 @login_required
 @require_POST
@@ -110,7 +171,7 @@ def collection_requests(request):
         return redirect('home:index')
     
     # Get pending collection access requests
-    access_requests = CollectionAccessRequest.objects.filter(status='PENDING').order_by('created_at')
+    access_requests = CollectionAccessRequest.objects.filter(status='pending').order_by('created_at')
     
     # Get pending game borrow requests
     borrow_requests = BorrowRequest.objects.filter(status='pending').order_by('request_date')
