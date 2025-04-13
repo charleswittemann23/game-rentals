@@ -9,10 +9,10 @@ class GameForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter game title'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Describe the game', 'rows': 3}),
+            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Main Library, Shelf A-1'}),
             'release_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'genre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Action'}),
             'platform': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., PC, Xbox'}),
-            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Main Library, Shelf A-1'}),
         }
 
 

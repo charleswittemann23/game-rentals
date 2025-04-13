@@ -26,11 +26,11 @@ def generate_upc():
 
 class Game(models.Model):
     title = models.CharField(max_length=200)
-    description = models.TextField(default='')
-    release_date = models.DateField(default=timezone.now)
-    genre = models.CharField(max_length=100, default='Unknown')
-    platform = models.CharField(max_length=100, default='Unknown')
-    location = models.CharField(max_length=100, default='', blank=True)
+    description = models.TextField()
+    release_date = models.DateField()
+    genre = models.CharField(max_length=100)
+    platform = models.CharField(max_length=100)
+    location = models.CharField(max_length=100, blank=True)
     image = models.ImageField(upload_to='game_images/')
     upc = models.CharField(max_length=12, unique=True, blank=True, editable=False)
     created_at = models.DateTimeField(default=timezone.now)
