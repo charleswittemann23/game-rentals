@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib import messages
+from django.views.decorators.http import require_POST
 
 
 def index(request):
@@ -187,3 +188,50 @@ def reject_borrow_request(request, request_id):
     
     messages.success(request, 'Borrow request rejected successfully.')
     return redirect('catalog:manage_borrow_requests')
+
+
+@login_required
+@require_POST
+def delete_game(request, game_id):
+    if request.user.userprofile.role != 'Librarian':
+        messages.error(request, 'You do not have permission to delete games.')
+        return redirect('catalog:index')
+    
+    game = get_object_or_404(Game, id=game_id)
+    
+    # Check if the game has any active loans
+    if Loan.objects.filter(game=game, is_returned=False).exists():
+        messages.error(request, 'Cannot delete a game that is currently on loan.')
+        return redirect('catalog:index')
+    
+    # Delete any associated borrow requests
+    BorrowRequest.objects.filter(game=game).delete()
+    
+    # Delete the game
+    game.delete()
+    messages.success(request, 'Game deleted successfully.')
+    
+    return redirect('catalog:index')
+
+
+@login_required
+def edit_game(request, game_id):
+    if request.user.userprofile.role != 'Librarian':
+        messages.error(request, 'You do not have permission to edit games.')
+        return redirect('catalog:index')
+    
+    game = get_object_or_404(Game, id=game_id)
+    
+    if request.method == 'POST':
+        form = GameForm(request.POST, request.FILES, instance=game)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Game updated successfully.')
+            return redirect('catalog:index')
+    else:
+        form = GameForm(instance=game)
+    
+    return render(request, 'catalog/edit_game.html', {
+        'form': form,
+        'game': game
+    })
