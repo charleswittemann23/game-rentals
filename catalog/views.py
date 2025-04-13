@@ -71,7 +71,7 @@ def add_game(request):
     else:
         form = GameForm()
 
-    return render(request, 'catalog/add_game.html', {'form': form})
+    return render(request, 'add_game.html', {'form': form})
 
 
 @login_required
@@ -126,7 +126,7 @@ def my_loans(request):
         is_returned=False
     ).order_by('-borrow_date')
     
-    return render(request, 'catalog/my_loans.html', {
+    return render(request, 'my_loans.html', {
         'active_loans': active_loans
     })
 
@@ -138,7 +138,7 @@ def manage_borrow_requests(request):
         return redirect('catalog:index')
     
     pending_requests = BorrowRequest.objects.filter(status='pending').order_by('request_date')
-    return render(request, 'catalog/manage_borrow_requests.html', {
+    return render(request, 'manage_borrow_requests.html', {
         'pending_requests': pending_requests
     })
 
@@ -236,7 +236,7 @@ def edit_game(request, game_id):
     else:
         form = GameForm(instance=game)
     
-    return render(request, 'catalog/edit_game.html', {
+    return render(request, 'edit_game.html', {
         'form': form,
         'game': game
     })

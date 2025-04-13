@@ -1,6 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils import timezone
 import random
+from datetime import timedelta
 
 
 def calculate_upc_check_digit(upc_without_check_digit):
