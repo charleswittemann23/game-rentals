@@ -10,12 +10,140 @@
                 <img src="{{ game.image.url }}" class="card-img-top" alt="{{ game.title }}">
                 <div class="card-body">
                     <h1 class="card-title">{{ game.title }}</h1>
-                    <p><strong>UPC:</strong> {{ game.upc }}</p>
+                    {% if user.is_authenticated %}
+                    <div class="alert alert-info mb-3">
+                        <h5 class="mb-0"><i class="fas fa-barcode me-2"></i>UPC: {{ game.upc }}</h5>
+                    </div>
+                    {% endif %}
+                    <div class="alert {% if game.is_on_loan %}alert-danger{% else %}alert-success{% endif %} mb-3">
+                        <h5 class="mb-0">
+                            <i class="fas {% if game.is_on_loan %}fa-times-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                            {% if game.is_on_loan %}
+                                Currently Borrowed by {{ game.current_borrower.username }}
+                                {% if user.userprofile.role == 'Librarian' %}
+                                    <form method="post" action="{% url 'catalog:return_game' game.id %}" class="d-inline ms-2">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-light">
+                                            <i class="fas fa-undo me-1"></i>Return Game
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            {% else %}
+                                Available for Borrowing
+                            {% endif %}
+                        </h5>
+                    </div>
                     <p class="card-text">{{ game.description }}</p>
                     <p><strong>Genre:</strong> {{ game.genre }}</p>
                     <p><strong>Platform:</strong> {{ game.platform }}</p>
                     <p><strong>Release Date:</strong> {{ game.release_date }}</p>
-                    <!-- Add additional information here (e.g., comments, ratings) -->
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Rating</h5>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <span class="h4 mb-0">{{ game.average_rating|floatformat:1 }}</span>
+                                    <span class="text-muted">/ 5.0</span>
+                                </div>
+                                <div class="text-warning">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= game.average_rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="ms-3 text-muted">({{ ratings.count }} ratings)</span>
+                            </div>
+                            {% if user.is_authenticated %}
+                                <form method="post" class="mb-3">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="rating" value="1">
+                                    <div class="form-check form-check-inline">
+                                        {% for value, label in rating_form.fields.rating.choices %}
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="rating" id="rating{{ value }}" value="{{ value }}" {% if user_rating and user_rating.rating == value %}checked{% endif %}>
+                                                <label class="form-check-label" for="rating{{ value }}">{{ value }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary ms-2">Rate</button>
+                                </form>
+                            {% endif %}
+                            
+                            <div class="mt-4">
+                                <h6>All Ratings</h6>
+                                {% for rating in ratings %}
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="me-2">{{ rating.user.username }}</span>
+                                        <div class="text-warning">
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= rating.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <small class="text-muted ms-2">{{ rating.created_at|date:"F j, Y" }}</small>
+                                    </div>
+                                {% empty %}
+                                    <p class="text-muted">No ratings yet.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Comments</h5>
+                            {% if user.is_authenticated %}
+                                <form method="post" class="mb-4">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="comment" value="1">
+                                    <div class="mb-3">
+                                        {{ comment_form.text }}
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                                </form>
+                            {% endif %}
+                            
+                            <div class="comments">
+                                {% for comment in comments %}
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h6 class="card-subtitle mb-0">{{ comment.user.username }}</h6>
+                                                <small class="text-muted">{{ comment.created_at|date:"F j, Y" }}</small>
+                                            </div>
+                                            <p class="card-text">{{ comment.text }}</p>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <p class="text-muted">No comments yet.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if user.is_authenticated and user.userprofile.role in 'Patron,Librarian' %}
+                        {% if not game.is_on_loan %}
+                            <form method="post" action="{% url 'catalog:request_borrow' game.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">
+                                    {% if user.userprofile.role == 'Librarian' %}
+                                        Borrow Game
+                                    {% else %}
+                                        Request to Borrow
+                                    {% endif %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>Currently on Loan</button>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>

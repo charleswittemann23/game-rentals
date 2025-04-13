@@ -14,5 +14,6 @@ urlpatterns = [
     path('approve-borrow-request/<int:request_id>/', views.approve_borrow_request, name='approve_borrow_request'),
     path('reject-borrow-request/<int:request_id>/', views.reject_borrow_request, name='reject_borrow_request'),
     path('delete/<int:game_id>/', views.delete_game, name='delete_game'),
-    path('<str:upc>/', views.game_detail, name='game_detail')
+    path('game/<str:upc>/', views.game_detail, name='game_detail'),
+    path('game/<int:game_id>/return/', views.return_game, name='return_game'),
 ]

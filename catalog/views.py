@@ -1,6 +1,6 @@
-from .models import Game, BorrowRequest, Loan
+from .models import Game, BorrowRequest, Loan, Rating
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import GameForm
+from .forms import GameForm, CommentForm, RatingForm
 from django.contrib.auth.decorators import login_required
 from collection.models import Collection, CollectionAccessRequest
 from django.db.models import Q
@@ -53,7 +53,44 @@ def index(request):
 
 def game_detail(request, upc):
     game = get_object_or_404(Game, upc=upc)
-    return render(request, 'game_detail.html', {'game': game})
+    comments = game.comments.all()
+    ratings = game.ratings.all()
+    user_rating = None
+    if request.user.is_authenticated:
+        user_rating = Rating.objects.filter(game=game, user=request.user).first()
+    
+    if request.method == 'POST' and request.user.is_authenticated:
+        if 'comment' in request.POST:
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False)
+                comment.game = game
+                comment.user = request.user
+                comment.save()
+                messages.success(request, 'Your comment has been added.')
+                return redirect('catalog:game_detail', upc=game.upc)
+        elif 'rating' in request.POST:
+            rating_form = RatingForm(request.POST)
+            if rating_form.is_valid():
+                rating, created = Rating.objects.update_or_create(
+                    game=game,
+                    user=request.user,
+                    defaults={'rating': int(rating_form.cleaned_data['rating'])}
+                )
+                messages.success(request, 'Your rating has been saved.')
+                return redirect('catalog:game_detail', upc=game.upc)
+    else:
+        comment_form = CommentForm()
+        rating_form = RatingForm(instance=user_rating)
+    
+    return render(request, 'game_detail.html', {
+        'game': game,
+        'comments': comments,
+        'ratings': ratings,
+        'comment_form': comment_form,
+        'rating_form': rating_form,
+        'user_rating': user_rating,
+    })
 
 
 @login_required
@@ -74,13 +111,47 @@ def add_game(request):
 
 @login_required
 def request_borrow(request, game_id):
-    if request.user.userprofile.role != 'Patron':
-        messages.error(request, 'Only patrons can request to borrow games.')
+    if request.user.userprofile.role not in ['Patron', 'Librarian']:
+        messages.error(request, 'Only patrons and librarians can borrow games.')
         return redirect('catalog:index')
     
     game = get_object_or_404(Game, id=game_id)
     
-    # Check if user already has a pending request for this game
+    # For Librarians, create loan directly
+    if request.user.userprofile.role == 'Librarian':
+        # Check if user already has this game on loan
+        user_loan = Loan.objects.filter(
+            game=game,
+            borrower=request.user,
+            is_returned=False
+        ).first()
+        
+        if user_loan:
+            messages.info(request, 'You already have this game on loan.')
+            return redirect('catalog:index')
+        
+        # Check if game is already on loan to someone else
+        active_loan = Loan.objects.filter(
+            game=game,
+            is_returned=False
+        ).exclude(borrower=request.user).first()
+        
+        if active_loan:
+            messages.info(request, 'This game is already on loan to another user.')
+            return redirect('catalog:index')
+        
+        # Create loan directly for Librarians
+        due_date = timezone.now() + timedelta(days=14)  # 2-week loan period
+        Loan.objects.create(
+            game=game,
+            borrower=request.user,
+            due_date=due_date
+        )
+        
+        messages.success(request, 'Game borrowed successfully.')
+        return redirect('catalog:index')
+    
+    # For Patrons, create borrow request
     existing_request = BorrowRequest.objects.filter(
         game=game,
         requester=request.user,
@@ -115,8 +186,8 @@ def request_borrow(request, game_id):
 
 @login_required
 def my_loans(request):
-    if request.user.userprofile.role != 'Patron':
-        messages.error(request, 'Only patrons can view their loans.')
+    if request.user.userprofile.role not in ['Patron', 'Librarian']:
+        messages.error(request, 'Only patrons and librarians can view their loans.')
         return redirect('catalog:index')
     
     active_loans = Loan.objects.filter(
@@ -238,3 +309,25 @@ def edit_game(request, game_id):
         'form': form,
         'game': game
     })
+
+
+@login_required
+@require_POST
+def return_game(request, game_id):
+    if request.user.userprofile.role != 'Librarian':
+        messages.error(request, 'Only librarians can return games on behalf of users.')
+        return redirect('catalog:index')
+    
+    game = get_object_or_404(Game, id=game_id)
+    active_loan = Loan.objects.filter(game=game, is_returned=False).first()
+    
+    if not active_loan:
+        messages.info(request, 'This game is not currently on loan.')
+        return redirect('catalog:game_detail', upc=game.upc)
+    
+    active_loan.is_returned = True
+    active_loan.return_date = timezone.now()
+    active_loan.save()
+    
+    messages.success(request, f'Game has been returned from {active_loan.borrower.username}.')
+    return redirect('catalog:game_detail', upc=game.upc)

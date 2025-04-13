@@ -40,6 +40,22 @@ class Game(models.Model):
             self.upc = generate_upc()
         super().save(*args, **kwargs)
 
+    @property
+    def is_on_loan(self):
+        return self.loans.filter(is_returned=False).exists()
+
+    @property
+    def current_borrower(self):
+        active_loan = self.loans.filter(is_returned=False).first()
+        return active_loan.borrower if active_loan else None
+
+    @property
+    def average_rating(self):
+        ratings = self.ratings.all()
+        if ratings:
+            return sum(rating.rating for rating in ratings) / len(ratings)
+        return 0
+
     def __str__(self):
         return self.title
 
@@ -76,3 +92,40 @@ class Loan(models.Model):
     
     def __str__(self):
         return f"{self.borrower.username}'s loan of {self.game.title}"
+
+
+class Comment(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Comment by {self.user.username} on {self.game.title}'
+
+
+class Rating(models.Model):
+    RATING_CHOICES = [
+        (1, '1 - Poor'),
+        (2, '2 - Fair'),
+        (3, '3 - Good'),
+        (4, '4 - Very Good'),
+        (5, '5 - Excellent'),
+    ]
+    
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ratings')
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['game', 'user']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Rating {self.rating} by {self.user.username} on {self.game.title}'
