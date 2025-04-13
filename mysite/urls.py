@@ -10,7 +10,7 @@ urlpatterns = [
     path('', include('home.urls')),
     path("catalog/", include("catalog.urls")),
     path('collections/', include('collection.urls')),
-    path("manage/", include("libpanel.urls")),
+    path("manage/", include("libpanel.urls", namespace="libpanel")),
 ]
 
 # Serve media files during development

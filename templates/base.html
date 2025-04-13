@@ -53,10 +53,17 @@
                     </li>
                     {% if user.is_authenticated %}
                         {% if user.userprofile.role == 'Librarian' %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'libpanel' %}">
-                                <i class="fas fa-heart me-1"></i> Librarian Tools
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="librarianDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-tools me-1"></i> Librarian Tools
                             </a>
+                            <ul class="dropdown-menu" aria-labelledby="librarianDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'libpanel:index' %}">
+                                        <i class="fas fa-clipboard-list me-1"></i> Manage Requests
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         {% endif %}
                     {% endif %}
@@ -89,6 +96,19 @@
             </div>
         </div>
     </nav>
+
+    <div class="container mt-3">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
 
     {% block content %}{% endblock %}
 

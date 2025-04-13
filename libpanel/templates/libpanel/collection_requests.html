@@ -1,47 +1,117 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Collection Access Requests{% endblock %}
+{% block title %}Manage Requests{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Collection Access Requests</h2>
-    
-    {% if pending_requests %}
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Collection</th>
-                        <th>Requested By</th>
-                        <th>Date Requested</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for request in pending_requests %}
+    <div class="d-flex align-items-center mb-4">
+        <i class="fas fa-clipboard-list text-primary me-3 fs-3"></i>
+        <h1 class="display-7 fw-bold mb-0">Manage Requests</h1>
+    </div>
+    <p class="lead text-muted mb-4">Review and process patron requests</p>
+    <div class="d-flex justify-content-start mb-4">
+        <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
+    </div>
+
+    <!-- Collection Access Requests -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-users me-2"></i> Collection Access Requests
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if access_requests %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Collection</th>
+                            <th>Requester</th>
+                            <th>Request Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in access_requests %}
                         <tr>
                             <td>{{ request.collection.name }}</td>
-                            <td>{{ request.user.username }}</td>
-                            <td>{{ request.created_at|date:"F j, Y" }}</td>
+                            <td>{{ request.requester.username }}</td>
+                            <td>{{ request.created_at }}</td>
+                            <td>{{ request.status }}</td>
                             <td>
-                                <form method="post" action="{% url 'collection:handle_access_request' request.id 'approve' %}" style="display: inline;">
+                                <form method="post" action="{% url 'libpanel:approve_access_request' request.id %}" style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-success btn-sm">Approve</button>
                                 </form>
-                                <form method="post" action="{% url 'collection:handle_access_request' request.id 'reject' %}" style="display: inline;">
+                                <form method="post" action="{% url 'libpanel:reject_access_request' request.id %}" style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                                 </form>
                             </td>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> No pending collection access requests.
+            </div>
+            {% endif %}
         </div>
-    {% else %}
-        <div class="alert alert-info">
-            No pending collection access requests.
+    </div>
+
+    <!-- Game Borrow Requests -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-gamepad me-2"></i> Game Borrow Requests
+            </h5>
         </div>
-    {% endif %}
+        <div class="card-body">
+            {% if borrow_requests %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>Requester</th>
+                            <th>Request Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in borrow_requests %}
+                        <tr>
+                            <td>{{ request.game.title }}</td>
+                            <td>{{ request.requester.username }}</td>
+                            <td>{{ request.request_date }}</td>
+                            <td>{{ request.status }}</td>
+                            <td>
+                                <form method="post" action="{% url 'libpanel:approve_borrow_request' request.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'libpanel:reject_borrow_request' request.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> No pending game borrow requests.
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %} 

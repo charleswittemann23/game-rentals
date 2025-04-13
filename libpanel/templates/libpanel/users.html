@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Users - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <i class="fas fa-users text-primary me-3 fs-3"></i>
+        <h1 class="display-7 fw-bold mb-0">Manage Users</h1>
+    </div>
+    <p class="lead text-muted mb-4">Manage user roles and permissions</p>
+    <div class="d-flex justify-content-start mb-4">
+        <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            {% if users %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Current Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.userprofile.role }}</td>
+                            <td>
+                                <form method="post" action="{% url 'libpanel:update_user' user.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <select name="role" class="form-select form-select-sm" onchange="this.form.submit()">
+                                        <option value="Patron" {% if user.userprofile.role == 'Patron' %}selected{% endif %}>Patron</option>
+                                        <option value="Librarian" {% if user.userprofile.role == 'Librarian' %}selected{% endif %}>Librarian</option>
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> No users found.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
