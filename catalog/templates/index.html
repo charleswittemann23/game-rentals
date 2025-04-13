@@ -34,6 +34,18 @@
             {% endif %}
         </div>
     </div>
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="GET" action="{% url 'catalog:index' %}" class="d-flex">
+                <input type="text" name="search" class="form-control" placeholder="Search games..." 
+                       value="{{ request.GET.search|default:'' }}">
+                <button type="submit" class="btn btn-primary ms-2">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-md-12">
