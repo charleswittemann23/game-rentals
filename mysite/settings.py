@@ -30,7 +30,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-b69fr(b7(7s@+m1c)#1tx6uokx=a)yecn-=jhk3m+leda@#&p4'
-
+if os.getenv("SECRET_KEY"):
+    SECRET_KEY = os.getenv("SECRET_KEY")
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -42,7 +43,7 @@ if IS_HEROKU_APP:
     # list the expected hostnames explicitly in production to prevent HTTP Host header attacks. See:
     # https://docs.djangoproject.com/en/5.1/ref/settings/#std-setting-ALLOWED_HOSTS
     ALLOWED_HOSTS = ["*"]
-
+    DEBUG = False
     # Redirect all non-HTTPS requests to HTTPS. This requires that:
     # 1. Your app has a TLS/SSL certificate, which all `*.herokuapp.com` domains do by default.
     #    When using a custom domain, you must configure one. See:
