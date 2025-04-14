@@ -33,33 +33,32 @@ SECRET_KEY = 'django-insecure-b69fr(b7(7s@+m1c)#1tx6uokx=a)yecn-=jhk3m+leda@#&p4
 if os.getenv("SECRET_KEY"):
     SECRET_KEY = os.getenv("SECRET_KEY")
 ACCOUNT_EMAIL_VERIFICATION = "none"
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 3600
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 IS_HEROKU_APP = "DYNO" in os.environ and "CI" not in os.environ
+# Redirect all non-HTTPS requests to HTTPS. This requires that:
+# 1. Your app has a TLS/SSL certificate, which all `*.herokuapp.com` domains do by default.
+#    When using a custom domain, you must configure one. See:
+#    https://devcenter.heroku.com/articles/automated-certificate-management
+# 2. Your app's WSGI web server is configured to use the `X-Forwarded-Proto` headers set by
+#    the Heroku Router (otherwise you may encounter infinite HTTP 301 redirects). See this
+#    app's `gunicorn.conf.py` for how this is done when using gunicorn.
+#
+# For maximum security, consider enabling HTTP Strict Transport Security (HSTS) headers too:
+# https://docs.djangoproject.com/en/5.1/ref/middleware/#http-strict-transport-security
+SECURE_SSL_REDIRECT = IS_HEROKU_APP
+CSRF_COOKIE_SECURE = IS_HEROKU_APP
+SESSION_COOKIE_SECURE = IS_HEROKU_APP
+SECURE_HSTS_SECONDS = 3600 if IS_HEROKU_APP else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = IS_HEROKU_APP
+SECURE_HSTS_PRELOAD = IS_HEROKU_APP
+DEBUG = not IS_HEROKU_APP
+
 if IS_HEROKU_APP:
     # On Heroku, it's safe to use a wildcard for `ALLOWED_HOSTS`, since the Heroku router performs
     # validation of the Host header in the incoming HTTP request. On other platforms you may need to
     # list the expected hostnames explicitly in production to prevent HTTP Host header attacks. See:
     # https://docs.djangoproject.com/en/5.1/ref/settings/#std-setting-ALLOWED_HOSTS
     ALLOWED_HOSTS = ["*"]
-    DEBUG = False
-    # Redirect all non-HTTPS requests to HTTPS. This requires that:
-    # 1. Your app has a TLS/SSL certificate, which all `*.herokuapp.com` domains do by default.
-    #    When using a custom domain, you must configure one. See:
-    #    https://devcenter.heroku.com/articles/automated-certificate-management
-    # 2. Your app's WSGI web server is configured to use the `X-Forwarded-Proto` headers set by
-    #    the Heroku Router (otherwise you may encounter infinite HTTP 301 redirects). See this
-    #    app's `gunicorn.conf.py` for how this is done when using gunicorn.
-    #
-    # For maximum security, consider enabling HTTP Strict Transport Security (HSTS) headers too:
-    # https://docs.djangoproject.com/en/5.1/ref/middleware/#http-strict-transport-security
-    SECURE_SSL_REDIRECT = True
 else:
     ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0", "[::]"]
 
