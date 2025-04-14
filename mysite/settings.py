@@ -33,7 +33,12 @@ SECRET_KEY = 'django-insecure-b69fr(b7(7s@+m1c)#1tx6uokx=a)yecn-=jhk3m+leda@#&p4
 if os.getenv("SECRET_KEY"):
     SECRET_KEY = os.getenv("SECRET_KEY")
 ACCOUNT_EMAIL_VERIFICATION = "none"
-
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 IS_HEROKU_APP = "DYNO" in os.environ and "CI" not in os.environ
