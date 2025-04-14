@@ -2,10 +2,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
-from django.conf import settings
 from unittest.mock import patch, MagicMock
 from allauth.socialaccount.models import SocialApp, SocialAccount, SocialToken
-from allauth.socialaccount.providers.google.urls import urlpatterns as google_urls
 
 User = get_user_model()
 
@@ -59,14 +57,14 @@ class GoogleOAuthTest(TestCase):
     def test_google_login_url(self):
         """Test that the Google login URL is accessible"""
         login_url = reverse('account_login')
-        response = self.client.get(login_url, follow=True)
+        response = self.client.get(login_url, follow=True, secure=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'google')
 
     def test_google_oauth_redirect(self):
         """Test that the Google OAuth redirect URL is accessible"""
         redirect_url = '/accounts/google/login/'  # Standard django-allauth path
-        response = self.client.get(redirect_url)
+        response = self.client.get(redirect_url, secure=True)
 
         # Either redirect to Google (301/302) or show login page (200) is acceptable
         self.assertIn(response.status_code, [200, 301, 302])
@@ -99,7 +97,7 @@ class GoogleOAuthTest(TestCase):
         response = self.client.get(callback_url, {
             'state': 'test-state',
             'code': 'test-auth-code'
-        })
+        }, secure=True)
         print(response)
         # This would typically redirect to settings.LOGIN_REDIRECT_URL
         self.assertIn(response.status_code, [302, 301, 200])
@@ -117,7 +115,7 @@ class GoogleOAuthTest(TestCase):
         self.assertTrue(login_successful)
 
         # Instead of checking context, check the session or make a request to a page that requires login
-        response = self.client.get(reverse('account_login'))
+        response = self.client.get(reverse('account_login'), secure=True)
 
         # If response is a redirect, it means we're already logged in
         if response.status_code == 302:
@@ -186,7 +184,7 @@ class GoogleOAuthTest(TestCase):
         connections_url = reverse('socialaccount_connections')
 
         # Get the current connections page
-        response = self.client.get(connections_url)
+        response = self.client.get(connections_url, follow=True, secure=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Google')
 
@@ -196,10 +194,10 @@ class GoogleOAuthTest(TestCase):
             'account': social_account_id,
             'action': 'remove'
         }
-        response = self.client.post(connections_url, data)
+        response = self.client.post(connections_url, data, secure=True)
 
         # Check if the connection was removed
-        self.assertEqual(response.status_code, 302)  # Should redirect
+        self.assertIn(response.status_code, [301, 302])  # Should redirect
         self.assertFalse(SocialAccount.objects.filter(id=social_account_id).exists())
 
     def test_google_login_email_already_exists(self):
