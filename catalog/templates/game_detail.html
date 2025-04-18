@@ -20,8 +20,8 @@
                             <i class="fas {% if game.is_on_loan %}fa-times-circle{% else %}fa-check-circle{% endif %} me-2"></i>
                             {% if game.is_on_loan %}
                                 Currently Borrowed by {{ game.current_borrower.username }}
-                                {% if user.userprofile.role == 'Librarian' %}
-                                    <form method="post" action="{% url 'catalog:return_game' game.id %}" class="d-inline ms-2">
+                                {% if user.userprofile.role == 'Librarian' or game.current_borrower == user %}
+                                    <form method="post" action="{% url 'catalog:return_game' game.upc %}" class="d-inline ms-2">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-outline-light">
                                             <i class="fas fa-undo me-1"></i>Return Game
@@ -38,6 +38,31 @@
                     <p><strong>Platform:</strong> {{ game.platform }}</p>
                     <p><strong>Location:</strong> {{ game.location }}</p>
                     <p><strong>Release Date:</strong> {{ game.release_date }}</p>
+                    
+                    {% if game.collections.exists %}
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Collections</h5>
+                            <div class="list-group">
+                                {% for collection in game.collections.all %}
+                                    <a href="{% url 'collection:view_collection' collection.id %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">{{ collection.name }}</h6>
+                                                <small class="text-muted">Created by {{ collection.creator.username }}</small>
+                                            </div>
+                                            {% if collection.is_private %}
+                                                <span class="badge bg-warning">Private</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Public</span>
+                                            {% endif %}
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                     
                     <div class="card mb-4">
                         <div class="card-body">

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import random
 from datetime import timedelta
+from django.core.exceptions import ValidationError
 
 
 def calculate_upc_check_digit(upc_without_check_digit):
@@ -37,9 +38,22 @@ class Game(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
+        self.clean()
         if not self.upc:
             self.upc = generate_upc()
         super().save(*args, **kwargs)
+
+    @property
+    def is_in_private_collection(self):
+        return self.collections.filter(is_private=True).exists()
+
+    @property
+    def private_collection(self):
+        return self.collections.filter(is_private=True).first()
+
+    def clean(self):
+        if self.is_in_private_collection and self.collections.count() > 1:
+            raise ValidationError("A game in a private collection cannot be in any other collections.")
 
     @property
     def is_on_loan(self):
@@ -86,7 +100,7 @@ class BorrowRequest(models.Model):
 class Loan(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='loans')
     borrower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='loans')
-    borrow_date = models.DateTimeField(auto_now_add=True)
+    borrow_date = models.DateTimeField()
     due_date = models.DateTimeField()
     return_date = models.DateTimeField(null=True, blank=True)
     is_returned = models.BooleanField(default=False)

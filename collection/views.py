@@ -1,9 +1,10 @@
-from .models import Collection, CollectionAccessRequest
+from .models import Collection, CollectionAccessRequest, Game
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CollectionForm, CollectionAccessRequestForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
+from django.core.exceptions import ValidationError
 
 
 def index(request):
@@ -182,3 +183,37 @@ def reject_request(request, request_id):
     access_request.save()
     messages.success(request, 'Access request rejected successfully.')
     return redirect('collection:manage_access_requests')
+
+
+@login_required
+def add_game_to_collection(request, collection_id, game_id):
+    collection = get_object_or_404(Collection, id=collection_id)
+    game = get_object_or_404(Game, id=game_id)
+
+    # Check permissions
+    if collection.creator != request.user and request.user.userprofile.role != 'Librarian':
+        messages.error(request, 'You do not have permission to add games to this collection.')
+        return redirect('collection:view_collection', pk=collection_id)
+
+    try:
+        collection.add_game(game)
+        messages.success(request, f'Game "{game.title}" added to collection successfully!')
+    except ValidationError as e:
+        messages.error(request, str(e))
+
+    return redirect('collection:view_collection', pk=collection_id)
+
+
+@login_required
+def remove_game_from_collection(request, collection_id, game_id):
+    collection = get_object_or_404(Collection, id=collection_id)
+    game = get_object_or_404(Game, id=game_id)
+
+    # Check permissions
+    if collection.creator != request.user and request.user.userprofile.role != 'Librarian':
+        messages.error(request, 'You do not have permission to remove games from this collection.')
+        return redirect('collection:view_collection', pk=collection_id)
+
+    collection.games.remove(game)
+    messages.success(request, f'Game "{game.title}" removed from collection successfully!')
+    return redirect('collection:view_collection', pk=collection_id)
