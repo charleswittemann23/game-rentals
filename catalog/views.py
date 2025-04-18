@@ -186,18 +186,24 @@ def request_borrow(request, game_id):
 
 @login_required
 def my_loans(request):
-    if request.user.userprofile.role not in ['Patron', 'Librarian']:
-        messages.error(request, 'Only patrons and librarians can view their loans.')
-        return redirect('catalog:index')
-    
+    # Get active loans for the current user
     active_loans = Loan.objects.filter(
         borrower=request.user,
         is_returned=False
-    ).order_by('-borrow_date')
+    ).select_related('game')
     
-    return render(request, 'my_loans.html', {
-        'active_loans': active_loans
-    })
+    context = {
+        'active_loans': active_loans,
+    }
+    
+    # If user is a librarian, also get all active loans
+    if request.user.userprofile.role == 'Librarian':
+        all_active_loans = Loan.objects.filter(
+            is_returned=False
+        ).select_related('game', 'borrower')
+        context['all_active_loans'] = all_active_loans
+    
+    return render(request, 'my_loans.html', context)
 
 
 @login_required
@@ -312,22 +318,43 @@ def edit_game(request, game_id):
 
 
 @login_required
-@require_POST
 def return_game(request, game_id):
-    if request.user.userprofile.role != 'Librarian':
-        messages.error(request, 'Only librarians can return games on behalf of users.')
+    if request.user.userprofile.role not in ['Patron', 'Librarian']:
+        messages.error(request, 'Only patrons and librarians can return games.')
         return redirect('catalog:index')
     
     game = get_object_or_404(Game, id=game_id)
-    active_loan = Loan.objects.filter(game=game, is_returned=False).first()
     
-    if not active_loan:
-        messages.info(request, 'This game is not currently on loan.')
-        return redirect('catalog:game_detail', upc=game.upc)
+    # For any user role, find the active loan for this game
+    loan = Loan.objects.filter(
+        game=game,
+        is_returned=False
+    ).first()
     
-    active_loan.is_returned = True
-    active_loan.return_date = timezone.now()
-    active_loan.save()
+    # If user is a patron, they can only return their own loans
+    if request.user.userprofile.role == 'Patron' and loan and loan.borrower != request.user:
+        messages.error(request, 'You can only return games that you have borrowed.')
+        return redirect('catalog:my_loans')
     
-    messages.success(request, f'Game has been returned from {active_loan.borrower.username}.')
-    return redirect('catalog:game_detail', upc=game.upc)
+    if request.method == 'POST':
+        if loan:
+            # Mark as returned (better for record keeping)
+            loan.is_returned = True
+            loan.return_date = timezone.now()
+            loan.returned_by = request.user  # Track who processed the return
+            loan.save()
+            
+            messages.success(request, f'Game "{game.title}" returned successfully!')
+        else:
+            messages.error(request, 'No active loan found for this game.')
+        
+        # Redirect librarians to all loans page and patrons to their loans page
+        if request.user.userprofile.role == 'Librarian':
+            return redirect('catalog:my_loans')
+        else:
+            return redirect('catalog:my_loans')
+    
+    return render(request, 'return_game.html', {
+        'game': game,
+        'loan': loan
+    })
