@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}My Loans - Video Game Rentals{% endblock %}
-
 {% block content %}
 <main class="container mt-5 fade-in">
     <div class="row">
@@ -22,7 +20,6 @@
             </div>
         </div>
     </div>
-
     <div class="row">
         <div class="col-md-12">
             {% if active_loans %}
@@ -40,12 +37,18 @@
                                         <small class="text-muted">
                                             Borrowed on: {{ loan.borrow_date|date:"F j, Y" }}<br>
                                             Due on: {{ loan.due_date|date:"F j, Y" }}
+                                            {% if request.user.userprofile.role == 'Librarian' and loan.borrower != request.user %}
+                                                <br>Borrower: {{ loan.borrower.get_full_name|default:loan.borrower.username }}
+                                            {% endif %}
                                         </small>
                                     </p>
                                 </div>
-                                <div class="card-footer bg-transparent">
-                                    <a href="{% url 'catalog:game_detail' loan.game.upc %}" class="btn btn-primary btn-sm">
+                                <div class="card-footer bg-transparent d-flex justify-content-between">
+                                    <a href="{% url 'catalog:game_detail' loan.game.id %}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-info-circle me-1"></i> View Details
+                                    </a>
+                                    <a href="{% url 'catalog:return_game' loan.game.id %}" class="btn btn-success btn-sm">
+                                        <i class="fas fa-undo me-1"></i> Return Game
                                     </a>
                                 </div>
                             </div>
@@ -60,5 +63,59 @@
             {% endif %}
         </div>
     </div>
+    
+    {% if request.user.userprofile.role == 'Librarian' %}
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exchange-alt text-primary me-3 fs-3"></i>
+                        <h2 class="display-7 fw-bold mb-0">All Active Loans</h2>
+                    </div>
+                </div>
+                <p class="lead text-muted mb-4">View and process returns for all users</p>
+                <div class="d-flex justify-content-start mb-4">
+                    <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
+                </div>
+                
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Game Title</th>
+                                        <th>Borrower</th>
+                                        <th>Borrow Date</th>
+                                        <th>Due Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for loan in all_active_loans %}
+                                        <tr>
+                                            <td>{{ loan.game.title }}</td>
+                                            <td>{{ loan.borrower.get_full_name|default:loan.borrower.username }}</td>
+                                            <td>{{ loan.borrow_date|date:"F j, Y" }}</td>
+                                            <td>{{ loan.due_date|date:"F j, Y" }}</td>
+                                            <td>
+                                                <a href="{% url 'catalog:return_game' loan.game.id %}" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-undo me-1"></i> Process Return
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">No active loans found.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </main>
-{% endblock %} 
+{% endblock %}
