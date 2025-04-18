@@ -47,6 +47,12 @@
                                     <a href="{% url 'catalog:game_detail' loan.game.upc %}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-info-circle me-1"></i> View Details
                                     </a>
+                                    <form method="post" action="{% url 'catalog:return_game' loan.game.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-undo me-1"></i> Return Game
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

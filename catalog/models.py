@@ -86,7 +86,7 @@ class BorrowRequest(models.Model):
 class Loan(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='loans')
     borrower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='loans')
-    borrow_date = models.DateTimeField(auto_now_add=True)
+    borrow_date = models.DateTimeField()
     due_date = models.DateTimeField()
     return_date = models.DateTimeField(null=True, blank=True)
     is_returned = models.BooleanField(default=False)

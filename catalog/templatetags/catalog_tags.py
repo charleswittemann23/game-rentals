@@ -5,7 +5,7 @@ register = template.Library()
 
 @register.filter
 def is_borrowed_by(game, user):
-    return Loan.objects.filter(game=game, borrower=user, is_returned=False).exists()
+    return game.is_on_loan and game.current_borrower == user
 
 @register.filter
 def has_pending_borrow_request(game, user):

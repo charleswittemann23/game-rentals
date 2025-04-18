@@ -20,7 +20,7 @@
                             <i class="fas {% if game.is_on_loan %}fa-times-circle{% else %}fa-check-circle{% endif %} me-2"></i>
                             {% if game.is_on_loan %}
                                 Currently Borrowed by {{ game.current_borrower.username }}
-                                {% if user.userprofile.role == 'Librarian' %}
+                                {% if user.userprofile.role == 'Librarian' or game.current_borrower == user %}
                                     <form method="post" action="{% url 'catalog:return_game' game.id %}" class="d-inline ms-2">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-outline-light">

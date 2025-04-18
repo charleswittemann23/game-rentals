@@ -119,6 +119,16 @@ def request_borrow(request, game_id):
     
     # For Librarians, create loan directly
     if request.user.userprofile.role == 'Librarian':
+        # Check if game is already on loan to someone else
+        active_loan = Loan.objects.filter(
+            game=game,
+            is_returned=False
+        ).exclude(borrower=request.user).first()
+        
+        if active_loan:
+            messages.info(request, f'This game is already on loan to {active_loan.borrower.username}.')
+            return redirect('catalog:index')
+        
         # Check if user already has this game on loan
         user_loan = Loan.objects.filter(
             game=game,
@@ -130,21 +140,13 @@ def request_borrow(request, game_id):
             messages.info(request, 'You already have this game on loan.')
             return redirect('catalog:index')
         
-        # Check if game is already on loan to someone else
-        active_loan = Loan.objects.filter(
-            game=game,
-            is_returned=False
-        ).exclude(borrower=request.user).first()
-        
-        if active_loan:
-            messages.info(request, 'This game is already on loan to another user.')
-            return redirect('catalog:index')
-        
         # Create loan directly for Librarians
-        due_date = timezone.now() + timedelta(days=14)  # 2-week loan period
+        borrow_date = timezone.now()
+        due_date = borrow_date + timedelta(days=14)  # 2-week loan period
         Loan.objects.create(
             game=game,
             borrower=request.user,
+            borrow_date=borrow_date,
             due_date=due_date
         )
         
@@ -152,6 +154,17 @@ def request_borrow(request, game_id):
         return redirect('catalog:index')
     
     # For Patrons, create borrow request
+    # First check if the game is already borrowed by someone else
+    active_loan = Loan.objects.filter(
+        game=game,
+        is_returned=False
+    ).exclude(borrower=request.user).first()
+    
+    if active_loan:
+        messages.info(request, f'This game is already on loan to {active_loan.borrower.username}.')
+        return redirect('catalog:index')
+    
+    # Check if user already has a pending request
     existing_request = BorrowRequest.objects.filter(
         game=game,
         requester=request.user,
@@ -163,13 +176,13 @@ def request_borrow(request, game_id):
         return redirect('catalog:index')
     
     # Check if user already has an active loan for this game
-    active_loan = Loan.objects.filter(
+    user_loan = Loan.objects.filter(
         game=game,
         borrower=request.user,
         is_returned=False
     ).first()
     
-    if active_loan:
+    if user_loan:
         messages.info(request, 'You already have this game on loan.')
         return redirect('catalog:index')
     
@@ -231,10 +244,12 @@ def approve_borrow_request(request, request_id):
         return redirect('catalog:manage_borrow_requests')
     
     # Create new loan
-    due_date = timezone.now() + timedelta(days=14)  # 2-week loan period
+    borrow_date = timezone.now()
+    due_date = borrow_date + timedelta(days=14)  # 2-week loan period
     Loan.objects.create(
         game=borrow_request.game,
         borrower=borrow_request.requester,
+        borrow_date=borrow_date,
         due_date=due_date
     )
     
@@ -312,22 +327,26 @@ def edit_game(request, game_id):
 
 
 @login_required
-@require_POST
 def return_game(request, game_id):
-    if request.user.userprofile.role != 'Librarian':
-        messages.error(request, 'Only librarians can return games on behalf of users.')
-        return redirect('catalog:index')
-    
     game = get_object_or_404(Game, id=game_id)
+    
+    # Debug information
     active_loan = Loan.objects.filter(game=game, is_returned=False).first()
     
-    if not active_loan:
-        messages.info(request, 'This game is not currently on loan.')
-        return redirect('catalog:game_detail', upc=game.upc)
+    # Check if the user is the current borrower
+    if not game.is_on_loan:
+        messages.error(request, "This game is not currently on loan.")
+    elif game.current_borrower != request.user:
+        messages.error(request, f"This game is currently borrowed by {game.current_borrower.username}, not you.")
+    else:
+        # Update the loan status
+        loan = Loan.objects.filter(game=game, borrower=request.user, is_returned=False).first()
+        if loan:
+            loan.is_returned = True
+            loan.return_date = timezone.now()
+            loan.save()
+            messages.success(request, f"You have successfully returned {game.title}.")
+        else:
+            messages.error(request, "Could not find the loan record.")
     
-    active_loan.is_returned = True
-    active_loan.return_date = timezone.now()
-    active_loan.save()
-    
-    messages.success(request, f'Game has been returned from {active_loan.borrower.username}.')
     return redirect('catalog:game_detail', upc=game.upc)
