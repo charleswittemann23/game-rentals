@@ -51,7 +51,7 @@ SESSION_COOKIE_SECURE = IS_HEROKU_APP
 SECURE_HSTS_SECONDS = 3600 if IS_HEROKU_APP else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = IS_HEROKU_APP
 SECURE_HSTS_PRELOAD = IS_HEROKU_APP
-DEBUG = False #not IS_HEROKU_APP
+DEBUG = not IS_HEROKU_APP
 
 if IS_HEROKU_APP:
     # On Heroku, it's safe to use a wildcard for `ALLOWED_HOSTS`, since the Heroku router performs
@@ -103,7 +103,7 @@ MIDDLEWARE = [
 ]
 
 # Google Login Stuff
-SITE_ID = 2
+SITE_ID = 4
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
