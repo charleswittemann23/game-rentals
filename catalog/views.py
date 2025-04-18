@@ -316,7 +316,9 @@ def edit_game(request, game_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Game updated successfully.')
-            return redirect('catalog:index')
+            return redirect('catalog:game_detail', upc=game.upc)
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = GameForm(instance=game)
     
