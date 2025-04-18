@@ -72,15 +72,9 @@
                                 </p>
                             </div>
                             <div class="card-footer bg-transparent">
-                                {% if game.collections.exists %}
-                                    <a href="{% url 'collection:view_collection' game.collections.first.id %}" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-info-circle me-1"></i> View Details
-                                    </a>
-                                {% else %}
-                                    <a href="{% url 'catalog:game_detail' game.upc %}" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-info-circle me-1"></i> View Details
-                                    </a>
-                                {% endif %}
+                                <a href="{% url 'catalog:game_detail' game.upc %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-info-circle me-1"></i> View Details
+                                </a>
                                 {% if user.is_authenticated and user.userprofile.role in 'Patron,Librarian' %}
                                     {% if game|is_borrowed_by:user %}
                                         <button class="btn btn-success btn-sm" disabled>

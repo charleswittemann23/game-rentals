@@ -39,6 +39,31 @@
                     <p><strong>Location:</strong> {{ game.location }}</p>
                     <p><strong>Release Date:</strong> {{ game.release_date }}</p>
                     
+                    {% if game.collections.exists %}
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Collections</h5>
+                            <div class="list-group">
+                                {% for collection in game.collections.all %}
+                                    <a href="{% url 'collection:view_collection' collection.id %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">{{ collection.name }}</h6>
+                                                <small class="text-muted">Created by {{ collection.creator.username }}</small>
+                                            </div>
+                                            {% if collection.is_private %}
+                                                <span class="badge bg-warning">Private</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Public</span>
+                                            {% endif %}
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
                     <div class="card mb-4">
                         <div class="card-body">
                             <h5 class="card-title">Rating</h5>
