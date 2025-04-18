@@ -333,20 +333,32 @@ def return_game(request, game_id):
     # Debug information
     active_loan = Loan.objects.filter(game=game, is_returned=False).first()
     
-    # Check if the user is the current borrower
+    # Check if the game is on loan
     if not game.is_on_loan:
         messages.error(request, "This game is not currently on loan.")
-    elif game.current_borrower != request.user:
-        messages.error(request, f"This game is currently borrowed by {game.current_borrower.username}, not you.")
     else:
-        # Update the loan status
-        loan = Loan.objects.filter(game=game, borrower=request.user, is_returned=False).first()
-        if loan:
-            loan.is_returned = True
-            loan.return_date = timezone.now()
-            loan.save()
-            messages.success(request, f"You have successfully returned {game.title}.")
+        # If user is a Librarian, they can return any game
+        if request.user.userprofile.role == 'Librarian':
+            loan = Loan.objects.filter(game=game, is_returned=False).first()
+            if loan:
+                loan.is_returned = True
+                loan.return_date = timezone.now()
+                loan.save()
+                messages.success(request, f"You have successfully returned {game.title} for {loan.borrower.username}.")
+            else:
+                messages.error(request, "Could not find the loan record.")
+        # For non-Librarians, they can only return games they borrowed
+        elif game.current_borrower != request.user:
+            messages.error(request, f"This game is currently borrowed by {game.current_borrower.username}, not you.")
         else:
-            messages.error(request, "Could not find the loan record.")
+            # Update the loan status
+            loan = Loan.objects.filter(game=game, borrower=request.user, is_returned=False).first()
+            if loan:
+                loan.is_returned = True
+                loan.return_date = timezone.now()
+                loan.save()
+                messages.success(request, f"You have successfully returned {game.title}.")
+            else:
+                messages.error(request, "Could not find the loan record.")
     
     return redirect('catalog:game_detail', upc=game.upc)
