@@ -3,7 +3,7 @@ from .models import Collection
 from .forms import CollectionForm
 from datetime import date
 from django.contrib.auth.models import User
-from catalog.models import Game
+from catalog.models import Game, generate_upc
 from catalog.forms import GameForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -32,7 +32,8 @@ class CollectionFormTest(TestCase):
             description='Description 1',
             release_date=date(2023, 1, 1),
             genre='Action',
-            platform='PC'
+            platform='PC',
+            upc=generate_upc()
         )
         
         self.game2 = Game.objects.create(

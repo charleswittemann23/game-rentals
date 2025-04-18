@@ -45,6 +45,8 @@ class Game(models.Model):
 
     @property
     def is_in_private_collection(self):
+        if self.pk is None:  # Check if object has an ID yet
+            return False     # Return a default value when not yet saved
         return self.collections.filter(is_private=True).exists()
 
     @property
