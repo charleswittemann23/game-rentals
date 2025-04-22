@@ -156,7 +156,7 @@
                     
                     {% if user.is_authenticated and user.userprofile.role in 'Patron,Librarian' %}
                         {% if not game.is_on_loan %}
-                            <form method="post" action="{% url 'catalog:request_borrow' game.id %}">
+                            <form method="post" action="{% url 'catalog:request_borrow' game.upc %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-primary">
                                     {% if user.userprofile.role == 'Librarian' %}
