@@ -1,5 +1,5 @@
 from django import forms
-from .models import Game, Comment, Rating
+from .models import Game, Comment, Rating, BorrowRequest
 
 
 class GameForm(forms.ModelForm):
@@ -35,3 +35,12 @@ class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
         fields = ['rating']
+
+
+class BorrowRequestForm(forms.ModelForm):
+    class Meta:
+        model = BorrowRequest
+        fields = ['duration_days']
+        widgets = {
+            'duration_days': forms.Select(attrs={'class': 'form-select'}),
+        }

@@ -87,10 +87,18 @@ class BorrowRequest(models.Model):
         (APPROVED, 'Approved'),
         (REJECTED, 'Rejected'),
     ]
+
+    DURATION_CHOICES = [
+        (7, '1 Week'),
+        (14, '2 Weeks'),
+        (21, '3 Weeks'),
+        (28, '4 Weeks'),
+    ]
     
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='borrow_requests')
     requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='borrow_requests')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
+    duration_days = models.IntegerField(choices=DURATION_CHOICES, default=14)
     request_date = models.DateTimeField(auto_now_add=True)
     processed_date = models.DateTimeField(null=True, blank=True)
     processed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='processed_requests')

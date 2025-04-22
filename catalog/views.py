@@ -1,6 +1,6 @@
 from .models import Game, BorrowRequest, Loan, Rating
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import GameForm, CommentForm, RatingForm
+from .forms import GameForm, CommentForm, RatingForm, BorrowRequestForm
 from django.contrib.auth.decorators import login_required
 from collection.models import Collection, CollectionAccessRequest
 from django.db.models import Q
@@ -113,46 +113,39 @@ def add_game(request):
 def request_borrow(request, upc):
     game = get_object_or_404(Game, upc=upc)
     
-    # Check if game is already on loan
+    # Check if game is available
     if game.is_on_loan:
-        messages.error(request, 'This game is currently on loan.')
+        messages.error(request, 'This game is not available for borrowing.')
         return redirect('catalog:game_detail', upc=game.upc)
     
-    # Check if user has an active loan for this game
+    # Check if user already has an active loan for this game
     if Loan.objects.filter(game=game, borrower=request.user, is_returned=False).exists():
         messages.error(request, 'You already have an active loan for this game.')
         return redirect('catalog:game_detail', upc=game.upc)
     
-    # If user is a Librarian, create loan directly
-    if request.user.userprofile.role == 'Librarian':
-        # Create loan directly
-        borrow_date = timezone.now()
-        due_date = borrow_date + timedelta(days=14)  # 2-week loan period
-        Loan.objects.create(
-            game=game,
-            borrower=request.user,
-            borrow_date=borrow_date,
-            due_date=due_date
-        )
-        messages.success(request, 'Game has been borrowed successfully.')
-        return redirect('catalog:game_detail', upc=game.upc)
-    
-    # For Patrons, check if they have already requested this game
+    # Check if user already has a pending request for this game
     if BorrowRequest.objects.filter(game=game, requester=request.user, status='pending').exists():
-        messages.error(request, 'You have already requested to borrow this game.')
+        messages.error(request, 'You already have a pending request for this game.')
         return redirect('catalog:game_detail', upc=game.upc)
     
     if request.method == 'POST':
-        # Create borrow request
-        BorrowRequest.objects.create(
-            game=game,
-            requester=request.user,
-            status='pending'
-        )
-        messages.success(request, 'Your request to borrow the game has been submitted.')
-        return redirect('catalog:game_detail', upc=game.upc)
+        form = BorrowRequestForm(request.POST)
+        if form.is_valid():
+            # Create the borrow request
+            borrow_request = BorrowRequest.objects.create(
+                game=game,
+                requester=request.user,
+                duration_days=form.cleaned_data['duration_days']
+            )
+            messages.success(request, 'Your borrow request has been submitted successfully.')
+            return redirect('catalog:game_detail', upc=game.upc)
+    else:
+        form = BorrowRequestForm()
     
-    return render(request, 'catalog/request_borrow.html', {'game': game})
+    return render(request, 'catalog/request_borrow.html', {
+        'game': game,
+        'form': form
+    })
 
 
 @login_required
@@ -207,9 +200,9 @@ def approve_borrow_request(request, request_id):
         messages.error(request, 'This game is already on loan to another patron.')
         return redirect('catalog:manage_borrow_requests')
     
-    # Create new loan
+    # Create new loan using the requested duration
     borrow_date = timezone.now()
-    due_date = borrow_date + timedelta(days=14)  # 2-week loan period
+    due_date = borrow_date + timedelta(days=borrow_request.duration_days)
     Loan.objects.create(
         game=borrow_request.game,
         borrower=borrow_request.requester,

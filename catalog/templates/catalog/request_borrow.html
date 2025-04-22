@@ -1,94 +1,79 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Request to Borrow - {{ game.title }}{% endblock %}
+{% block title %}Request to Borrow {{ game.title }}{% endblock %}
 
 {% block content %}
-<main class="container mt-5 fade-in">
+<div class="container mt-4">
     <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-hand-holding text-primary me-3 fs-3"></i>
-                    <h1 class="display-7 fw-bold mb-0">Request to Borrow</h1>
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Request to Borrow: {{ game.title }}</h2>
                 </div>
-                <a href="{% url 'catalog:game_detail' game.upc %}" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Game
-                </a>
-            </div>
-            <p class="lead text-muted mb-4">Confirm your request to borrow {{ game.title }}</p>
-            <div class="d-flex justify-content-start mb-4">
-                <div class="border-bottom border-3 w-25" style="border-color: var(--primary-color) !important;"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow">
                 <div class="card-body">
-                    <h5 class="card-title">Game Details</h5>
-                    <div class="row">
+                    <div class="row mb-4">
                         <div class="col-md-4">
                             {% if game.image %}
-                                <img src="{{ game.image.url }}" class="img-fluid rounded" alt="{{ game.title }}">
+                                <img src="{{ game.image.url }}" alt="{{ game.title }}" class="img-fluid rounded">
+                            {% else %}
+                                <img src="{% static 'images/default.jpg' %}" alt="{{ game.title }}" class="img-fluid rounded">
                             {% endif %}
                         </div>
                         <div class="col-md-8">
                             <h4>{{ game.title }}</h4>
-                            <p>{{ game.description }}</p>
-                            <p><strong>Platform:</strong> {{ game.platform }}</p>
-                            <p><strong>Genre:</strong> {{ game.genre }}</p>
+                            <p class="text-muted">{{ game.description }}</p>
+                            <p><strong>Platform:</strong> {{ game.get_platform_display }}</p>
+                            <p><strong>Genre:</strong> {{ game.get_genre_display }}</p>
                             <p><strong>Location:</strong> {{ game.location }}</p>
                         </div>
                     </div>
-                    
-                    <hr>
-                    
-                    <h5 class="mb-3">Loan Terms</h5>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-clock me-2"></i> Loan period: 14 days</li>
-                        <li><i class="fas fa-info-circle me-2"></i> Please handle the game with care</li>
-                        <li><i class="fas fa-exclamation-triangle me-2"></i> Late returns may affect future borrowing privileges</li>
-                    </ul>
-                    
-                    <form method="post" class="mt-4">
+
+                    <form method="post">
                         {% csrf_token %}
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="terms" required>
-                            <label class="form-check-label" for="terms">
-                                I agree to return the game within 14 days and accept responsibility for its condition
-                            </label>
+                        
+                        <div class="mb-3">
+                            <label for="id_duration_days" class="form-label">Loan Duration</label>
+                            {{ form.duration_days }}
+                            {% if form.duration_days.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.duration_days.errors }}
+                                </div>
+                            {% endif %}
                         </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-hand-holding me-1"></i> Confirm Request
-                        </button>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the loan terms and conditions
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Submit Request</button>
+                            <a href="{% url 'catalog:game_detail' game.upc %}" class="btn btn-secondary">Cancel</a>
+                        </div>
                     </form>
                 </div>
             </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card shadow">
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="mb-0">Important Information</h3>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Important Information</h5>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <i class="fas fa-info-circle text-primary me-2"></i>
-                            Your request will be reviewed by a librarian
-                        </li>
-                        <li class="list-group-item">
-                            <i class="fas fa-clock text-warning me-2"></i>
-                            Processing may take 1-2 business days
-                        </li>
-                        <li class="list-group-item">
-                            <i class="fas fa-envelope text-success me-2"></i>
-                            You will be notified when your request is processed
-                        </li>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">✓ Your request will be reviewed by a librarian</li>
+                        <li class="mb-2">✓ You will be notified when your request is approved or denied</li>
+                        <li class="mb-2">✓ If approved, you will have 24 hours to pick up the game</li>
+                        <li class="mb-2">✓ You must return the game in the same condition as received</li>
+                        <li class="mb-2">✓ Late returns may affect your borrowing privileges</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-</main>
+</div>
 {% endblock %} 

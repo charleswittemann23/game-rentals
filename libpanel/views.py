@@ -123,12 +123,12 @@ def approve_borrow_request(request, request_id):
         borrow_request.processed_date = timezone.now()
         borrow_request.save()
         
-        # Create a new loan record
+        # Create a new loan record using the requested duration
         loan = Loan.objects.create(
             game=borrow_request.game,
             borrower=borrow_request.requester,
             borrow_date=timezone.now(),
-            due_date=timezone.now() + timedelta(days=14)  # 2-week loan period
+            due_date=timezone.now() + timedelta(days=borrow_request.duration_days)
         )
         
         messages.success(request, 'Borrow request approved successfully.')
