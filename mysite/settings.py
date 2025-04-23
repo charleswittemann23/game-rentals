@@ -103,7 +103,7 @@ MIDDLEWARE = [
 ]
 
 # Google Login Stuff
-SITE_ID = 2
+SITE_ID = 4
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
