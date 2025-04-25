@@ -1,4 +1,4 @@
-from .models import Game, BorrowRequest, Loan, Rating
+from .models import Game, BorrowRequest, Loan, Rating, Comment
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import GameForm, CommentForm, RatingForm, BorrowRequestForm
 from django.contrib.auth.decorators import login_required
@@ -56,19 +56,36 @@ def game_detail(request, upc):
     comments = game.comments.all()
     ratings = game.ratings.all()
     user_rating = None
+    user_comment = None
+    user_has_commented = False
+
     if request.user.is_authenticated:
         user_rating = Rating.objects.filter(game=game, user=request.user).first()
-    
+        try:
+            user_comment = Comment.objects.get(game=game, user=request.user)
+            user_has_commented = True
+        except Comment.DoesNotExist:
+            pass
+
     if request.method == 'POST' and request.user.is_authenticated:
         if 'comment' in request.POST:
-            comment_form = CommentForm(request.POST)
-            if comment_form.is_valid():
-                comment = comment_form.save(commit=False)
-                comment.game = game
-                comment.user = request.user
-                comment.save()
-                messages.success(request, 'Your comment has been added.')
-                return redirect('catalog:game_detail', upc=game.upc)
+            if user_has_commented:
+                # Update existing comment
+                comment_form = CommentForm(request.POST, instance=user_comment)
+                if comment_form.is_valid():
+                    comment_form.save()
+                    messages.success(request, 'Your comment has been updated.')
+            else:
+                # Create new comment
+                comment_form = CommentForm(request.POST)
+                if comment_form.is_valid():
+                    comment = comment_form.save(commit=False)
+                    comment.game = game
+                    comment.user = request.user
+                    comment.save()
+                    messages.success(request, 'Your comment has been added.')
+            return redirect('catalog:game_detail', upc=game.upc)
+
         elif 'rating' in request.POST:
             rating_form = RatingForm(request.POST)
             if rating_form.is_valid():
@@ -80,9 +97,9 @@ def game_detail(request, upc):
                 messages.success(request, 'Your rating has been saved.')
                 return redirect('catalog:game_detail', upc=game.upc)
     else:
-        comment_form = CommentForm()
+        comment_form = CommentForm(instance=user_comment)
         rating_form = RatingForm(instance=user_rating)
-    
+
     return render(request, 'game_detail.html', {
         'game': game,
         'comments': comments,
@@ -90,7 +107,10 @@ def game_detail(request, upc):
         'comment_form': comment_form,
         'rating_form': rating_form,
         'user_rating': user_rating,
+        'user_has_commented': user_has_commented,
+        'user_comment': user_comment,
     })
+
 
 
 @login_required

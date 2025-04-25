@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load catalog_tags %}
 
 {% block title %}Game Details - {{ game.title }}{% endblock %}
 
@@ -15,23 +16,42 @@
                         <h5 class="mb-0"><i class="fas fa-barcode me-2"></i>UPC: {{ game.upc }}</h5>
                     </div>
                     {% endif %}
-                    <div class="alert {% if game.is_on_loan %}alert-danger{% else %}alert-success{% endif %} mb-3">
+                    <div class="alert
+                        {% if game.is_on_loan %}
+                            alert-danger
+                        {% elif game|has_pending_borrow_request %}
+                            alert-warning
+                        {% else %}
+                            alert-success
+                        {% endif %}
+                        mb-3 d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas {% if game.is_on_loan %}fa-times-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                            <i class="fas
+                                {% if game.is_on_loan %} fa-times-circle
+                                {% elif game|has_pending_borrow_request %} fa-warning
+                                {% else %} fa-check-circle
+                                {% endif %} me-2">
+                            </i>
                             {% if game.is_on_loan %}
-                                Currently Borrowed by {{ game.current_borrower.username }}
-                                {% if user.userprofile.role == 'Librarian' or game.current_borrower == user %}
-                                    <form method="post" action="{% url 'catalog:return_game' game.upc %}" class="d-inline ms-2">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-outline-light">
-                                            <i class="fas fa-undo me-1"></i>Return Game
-                                        </button>
-                                    </form>
+                                {% if user.userprofile.role == 'Librarian' %}
+                                    Currently Borrowed by {{ game.current_borrower.username }}
+                                {% else %}
+                                    Currently Borrowed
                                 {% endif %}
+                            {% elif game|has_pending_borrow_request %}
+                                Borrow request pending
                             {% else %}
                                 Available for Borrowing
                             {% endif %}
                         </h5>
+                        {% if game.is_on_loan and user.userprofile.role == 'Librarian' or game.current_borrower == user %}
+                            <form method="post" action="{% url 'catalog:return_game' game.upc %}" class="mb-0">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-light">
+                                    <i class="fas fa-undo me-1"></i>Return Game Early
+                                </button>
+                            </form>
+                        {% endif %}
                     </div>
                     <p class="card-text">{{ game.description }}</p>
                     <p><strong>Genre:</strong> {{ game.genre }}</p>
@@ -121,41 +141,43 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Comments</h5>
-                            {% if user.is_authenticated %}
+
+                    <div class="card-body">
+                        <h5 class="card-title">Comments</h5>
+                        {% if user.is_authenticated %}
                                 <form method="post" class="mb-4">
                                     {% csrf_token %}
                                     <input type="hidden" name="comment" value="1">
                                     <div class="mb-3">
                                         {{ comment_form.text }}
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                                        {% if user_has_commented %}
+                                            <button type="submit" class="btn btn-primary">Update Comment</button>
+                                        {% else %}
+                                            <button type="submit" class="btn btn-primary">Add Comment</button>
+                                        {% endif %}
                                 </form>
-                            {% endif %}
-                            
-                            <div class="comments">
-                                {% for comment in comments %}
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <h6 class="card-subtitle mb-0">{{ comment.user.username }}</h6>
-                                                <small class="text-muted">{{ comment.created_at|date:"F j, Y" }}</small>
-                                            </div>
-                                            <p class="card-text">{{ comment.text }}</p>
+                        {% endif %}
+
+                        <div class="comments">
+                            {% for comment in comments %}
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="card-subtitle mb-0">{{ comment.user.username }}</h6>
+                                            <small class="text-muted">{{ comment.created_at|date:"F j, Y" }}</small>
                                         </div>
+                                        <p class="card-text">{{ comment.text }}</p>
                                     </div>
-                                {% empty %}
-                                    <p class="text-muted">No comments yet.</p>
-                                {% endfor %}
-                            </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">No comments yet.</p>
+                            {% endfor %}
                         </div>
                     </div>
-                    
+
                     {% if user.is_authenticated and user.userprofile.role in 'Patron,Librarian' %}
-                        {% if not game.is_on_loan %}
+                        {% if not game.is_on_loan and not game|has_pending_borrow_request %}
                             <form method="post" action="{% url 'catalog:request_borrow' game.upc %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-primary">
@@ -166,8 +188,6 @@
                                     {% endif %}
                                 </button>
                             </form>
-                        {% else %}
-                            <button class="btn btn-secondary" disabled>Currently on Loan</button>
                         {% endif %}
                     {% endif %}
                 </div>
