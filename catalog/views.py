@@ -180,13 +180,6 @@ def my_loans(request):
         'active_loans': active_loans,
     }
     
-    # If user is a librarian, also get all active loans
-    if request.user.userprofile.role == 'Librarian':
-        all_active_loans = Loan.objects.filter(
-            is_returned=False
-        ).select_related('game', 'borrower')
-        context['all_active_loans'] = all_active_loans
-    
     return render(request, 'my_loans.html', context)
 
 

@@ -172,3 +172,18 @@ def requests(request):
         'access_requests': access_requests,
         'borrow_requests': borrow_requests
     })
+
+@login_required
+def loans(request):
+    if request.user.userprofile.role != 'Librarian':
+        return redirect('home')
+
+    all_active_loans = Loan.objects.filter(
+        is_returned=False
+    ).select_related('game', 'borrower')
+
+    context = {
+        'all_active_loans': all_active_loans,
+    }
+
+    return render(request, 'libpanel/loans.html', context)
