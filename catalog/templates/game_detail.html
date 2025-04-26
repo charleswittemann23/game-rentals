@@ -44,11 +44,11 @@
                                 Available for Borrowing
                             {% endif %}
                         </h5>
-                        {% if game.is_on_loan and user.userprofile.role == 'Librarian' or game.current_borrower == user %}
+                        {% if game.is_on_loan and user.userprofile.role == 'Librarian' %}
                             <form method="post" action="{% url 'catalog:return_game' game.upc %}" class="mb-0">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-sm btn-light">
-                                    <i class="fas fa-undo me-1"></i>Return Game Early
+                                    <i class="fas fa-undo me-1"></i>Return Game
                                 </button>
                             </form>
                         {% endif %}
