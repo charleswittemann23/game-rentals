@@ -16,4 +16,5 @@ urlpatterns = [
     path('delete/<str:upc>/', views.delete_game, name='delete_game'),
     path('game/<str:upc>/', views.game_detail, name='game_detail'),
     path('game/<str:upc>/return/', views.return_game, name='return_game'),
+    path('delete_comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
 ]

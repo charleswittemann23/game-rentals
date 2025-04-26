@@ -112,7 +112,6 @@ def game_detail(request, upc):
     })
 
 
-
 @login_required
 def add_game(request):
     if request.user.userprofile.role != 'Librarian':
@@ -329,3 +328,17 @@ def return_game(request, upc):
         return redirect('catalog:game_detail', upc=game.upc)
     
     return render(request, 'catalog/return_game.html', {'game': game})
+
+
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+
+    # Check if the user is the comment author or a librarian
+    if request.user.userprofile.role == 'Librarian' or request.user == comment.user:
+        comment.delete()
+        messages.success(request, 'Comment deleted successfully.')
+    else:
+        messages.error(request, 'You do not have permission to delete this comment.')
+
+    return redirect('catalog:game_detail', upc=comment.game.upc)

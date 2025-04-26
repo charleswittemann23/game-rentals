@@ -168,13 +168,23 @@
                                             <small class="text-muted">{{ comment.created_at|date:"F j, Y" }}</small>
                                         </div>
                                         <p class="card-text">{{ comment.text }}</p>
+
+                                        {% if user.is_authenticated %}
+                                            {% if user.userprofile.role == 'Librarian' or user == comment.user %}
+                                                <form method="post" action="{% url 'catalog:delete_comment' comment.id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash-alt"></i> Delete Comment
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        {% endif %}
                                     </div>
                                 </div>
                             {% empty %}
                                 <p class="text-muted">No comments yet.</p>
                             {% endfor %}
                         </div>
-                    </div>
 
                     {% if user.is_authenticated and user.userprofile.role in 'Patron,Librarian' %}
                         {% if not game.is_on_loan and not game|has_pending_borrow_request %}
