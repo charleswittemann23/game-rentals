@@ -14,6 +14,4 @@ urlpatterns = [
     path('manage-access-requests/', views.manage_access_requests, name='manage_access_requests'),
     path('approve-request/<int:request_id>/', views.approve_request, name='approve_request'),
     path('reject-request/<int:request_id>/', views.reject_request, name='reject_request'),
-    path('add-game/<int:collection_id>/<int:game_id>/', views.add_game_to_collection, name='add_game'),
-    path('remove-game/<int:collection_id>/<int:game_id>/', views.remove_game_from_collection, name='remove_game'),
 ]

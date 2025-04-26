@@ -1,28 +1,26 @@
-from .models import Collection, CollectionAccessRequest, Game
+from .models import Collection, CollectionAccessRequest
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import CollectionForm, CollectionAccessRequestForm
+from .forms import CollectionForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
-from django.core.exceptions import ValidationError
 
 
 def index(request):
     search_query = request.GET.get('search', '')
-    
+
     if search_query:
         # Filter collections based on search query
         search = Collection.objects.filter(name__icontains=search_query)
     else:
         # Get all collections
         search = Collection.objects.all()
-    
+
     # Add any additional filtering (e.g., for private collections) as needed
     if request.user.is_authenticated:
         collections = search.all()
     else:
         collections = search.filter(is_private=False)
-    
+
     # Simply pass the collections directly
     return render(request, "collection/index.html", {
         "collections": collections
@@ -37,7 +35,7 @@ def create_collection(request):
             collection = form.save(commit=False)
             collection.creator = request.user
             collection.save()
-            form.save_m2m()  # Save the many-to-many relationships
+            form.save()
             messages.success(request, 'Collection created successfully!')
             return redirect('collection:index')
         else:
@@ -83,7 +81,7 @@ def edit_collection(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Collection updated successfully!')
-            return redirect('collection:index')
+            return redirect('collection:view_collection', pk=collection.pk)
     else:
         form = CollectionForm(instance=collection, user=request.user)
 
@@ -110,25 +108,25 @@ def delete_collection(request, pk):
 @login_required
 def request_access(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
-    
+
     # Check if user already has a pending request
     existing_request = CollectionAccessRequest.objects.filter(
         collection=collection,
         requester=request.user,
         status='pending'  # Changed from CollectionAccessRequest.PENDING
     ).first()
-    
+
     if existing_request:
         messages.info(request, 'You already have a pending request for this collection.')
         return redirect('collection:index')
-    
+
     if request.method == 'POST':
         # Check for any existing request (including rejected ones)
         existing_request = CollectionAccessRequest.objects.filter(
             collection=collection,
             requester=request.user
         ).first()
-        
+
         if existing_request:
             # If there's an existing request, update its status to PENDING
             existing_request.status = 'pending'  # Changed from CollectionAccessRequest.PENDING
@@ -140,10 +138,10 @@ def request_access(request, collection_id):
                 requester=request.user,
                 status='pending'  # Changed from CollectionAccessRequest.PENDING
             )
-        
+
         messages.success(request, 'Access request submitted successfully.')
         return redirect('collection:index')
-    
+
     return redirect('collection:index')
 
 
@@ -152,7 +150,7 @@ def manage_access_requests(request):
     if request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to manage access requests.')
         return redirect('catalog:index')
-    
+
     pending_requests = CollectionAccessRequest.objects.filter(status='pending')  # Changed from CollectionAccessRequest.PENDING
     return render(request, 'collection/manage_access_requests.html', {
         'pending_requests': pending_requests
@@ -164,7 +162,7 @@ def approve_request(request, request_id):
     if request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to approve requests.')
         return redirect('catalog:index')
-    
+
     access_request = get_object_or_404(CollectionAccessRequest, id=request_id)
     access_request.status = 'approved'  # Changed from CollectionAccessRequest.APPROVED
     access_request.save()
@@ -177,43 +175,9 @@ def reject_request(request, request_id):
     if request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to reject requests.')
         return redirect('catalog:index')
-    
+
     access_request = get_object_or_404(CollectionAccessRequest, id=request_id)
     access_request.status = 'rejected'  # Changed from CollectionAccessRequest.REJECTED
     access_request.save()
     messages.success(request, 'Access request rejected successfully.')
     return redirect('collection:manage_access_requests')
-
-
-@login_required
-def add_game_to_collection(request, collection_id, game_id):
-    collection = get_object_or_404(Collection, id=collection_id)
-    game = get_object_or_404(Game, id=game_id)
-
-    # Check permissions
-    if collection.creator != request.user and request.user.userprofile.role != 'Librarian':
-        messages.error(request, 'You do not have permission to add games to this collection.')
-        return redirect('collection:view_collection', pk=collection_id)
-
-    try:
-        collection.add_game(game)
-        messages.success(request, f'Game "{game.title}" added to collection successfully!')
-    except ValidationError as e:
-        messages.error(request, str(e))
-
-    return redirect('collection:view_collection', pk=collection_id)
-
-
-@login_required
-def remove_game_from_collection(request, collection_id, game_id):
-    collection = get_object_or_404(Collection, id=collection_id)
-    game = get_object_or_404(Game, id=game_id)
-
-    # Check permissions
-    if collection.creator != request.user and request.user.userprofile.role != 'Librarian':
-        messages.error(request, 'You do not have permission to remove games from this collection.')
-        return redirect('collection:view_collection', pk=collection_id)
-
-    collection.games.remove(game)
-    messages.success(request, f'Game "{game.title}" removed from collection successfully!')
-    return redirect('collection:view_collection', pk=collection_id)
