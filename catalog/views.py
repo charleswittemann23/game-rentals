@@ -17,9 +17,16 @@ def index(request):
     # Start with all games
     games = Game.objects.all()
     search_query = request.GET.get('search', '')
-    
+
     if search_query:
-        games = games.filter(title__icontains=search_query)
+        games = games.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(genre__icontains=search_query) |
+            Q(platform__icontains=search_query) |
+            Q(location__icontains=search_query)
+        )
+
     # If user is authenticated and not a Librarian, filter games based on access
     if request.user.is_authenticated and request.user.userprofile.role == 'Patron':
         # Get IDs of private collections the user has access to
