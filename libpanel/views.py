@@ -41,7 +41,7 @@ def approve_collection_access_request(request, request_id):
     access_request = get_object_or_404(CollectionAccessRequest, id=request_id)
     collection = access_request.collection
 
-    if collection.creator != request.user:
+    if request.user.userprofile.role != 'Librarian':
         messages.error(request, 'You do not have permission to approve this request.')
         return redirect('home:index')
 
