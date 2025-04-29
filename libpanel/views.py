@@ -80,7 +80,7 @@ def approve_collection_access_request(request, request_id):
                 f'Request approved, but the following games are currently unavailable: {", ".join(unavailable_games)}.'
             )
         else:
-            messages.success(request, 'Collection access request approved and all loans created.')
+            messages.success(request, 'Request approved')
     except Exception as e:
         messages.error(request, f'An error occurred: {str(e)}')
 
