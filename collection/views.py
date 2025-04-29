@@ -3,17 +3,24 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CollectionForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 
 
 def index(request):
     search_query = request.GET.get('search', '')
 
+    search = Collection.objects.all()
+
     if search_query:
-        # Filter collections based on search query
-        search = Collection.objects.filter(name__icontains=search_query)
-    else:
-        # Get all collections
-        search = Collection.objects.all()
+        # Filter collections by their name or by related game attributes
+        search = search.filter(
+            Q(name__icontains=search_query) |
+            Q(games__title__icontains=search_query) |
+            Q(games__description__icontains=search_query) |
+            Q(games__genre__icontains=search_query) |
+            Q(games__platform__icontains=search_query) |
+            Q(games__location__icontains=search_query)
+        ).distinct()
 
     # Add any additional filtering (e.g., for private collections) as needed
     if request.user.is_authenticated:
@@ -151,7 +158,7 @@ def manage_access_requests(request):
         messages.error(request, 'You do not have permission to manage access requests.')
         return redirect('catalog:index')
 
-    pending_requests = CollectionAccessRequest.objects.filter(status='pending')  # Changed from CollectionAccessRequest.PENDING
+    pending_requests = CollectionAccessRequest.objects.filter(status='pending')
     return render(request, 'collection/manage_access_requests.html', {
         'pending_requests': pending_requests
     })
