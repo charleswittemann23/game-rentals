@@ -59,8 +59,10 @@ if IS_HEROKU_APP:
     # list the expected hostnames explicitly in production to prevent HTTP Host header attacks. See:
     # https://docs.djangoproject.com/en/5.1/ref/settings/#std-setting-ALLOWED_HOSTS
     ALLOWED_HOSTS = ["*"]
+    SITE_ID = 37
 else:
     ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0", "[::]"]
+    SITE_ID = 4
 
 # Application definition
 
@@ -103,7 +105,6 @@ MIDDLEWARE = [
 ]
 
 # Google Login Stuff
-SITE_ID = 4
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
