@@ -29,7 +29,7 @@
     </div>
 
     <div>
-        <h2 class="h4 mb-4">Games in Collection</h2>
+        <h2 class="h4 mb-4">Games in Collection ({{ collection.games.count }})</h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for game in collection.games.all %}
                     <div class="col">
