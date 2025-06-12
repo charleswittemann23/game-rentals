@@ -1,5 +1,12 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/hLqvXyMi)
+## Project from UVA CS 3240 Software Engineering Spring 2025
+- Under the instruction of Professor Mark Sheriff
+- In collaboration with Jonah Lee and Dawson Johnson
 
-Helpful command:
-1. Run "pip install -r requirements.txt" to get up to date environment properties. 
-2. If making any changes to .venv, run pip freeze > requirements.txt
+
+# Role/Responsibilities
+This project was originally designed with a team size of 5 students in mind. However, when several members left our team after dropping the class, each of our roles expanded to take on a bigger portion of the project. My technical expertise gained during this project consisted of:
+  - Heroku Cloud Deployment of our software
+  - AWS S3 compatibility to store our images.
+  - Implementation of basic django security features
+  - Search implementation features, and other general design features 
+
